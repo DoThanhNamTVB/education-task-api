@@ -1,0 +1,32 @@
+{
+    "name": "education-task-api",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node ./src/server.js",
+        "dev": "nodemon ./src/server.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/DoThanhNamTVB/education-task-api.git"
+    },
+    "author": "thanhnamtvb@gmail.com",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/DoThanhNamTVB/education-task-api/issues"
+    },
+    "homepage": "https://github.com/DoThanhNamTVB/education-task-api#readme",
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "mongoose": "^8.0.1",
+        "passport": "^0.6.0",
+        "passport-local": "^1.0.0"
+    },
+    "devDependencies": {
+        "morgan": "^1.10.0",
+        "nodemon": "^3.0.1"
+    }
+}
