@@ -3,13 +3,13 @@ const jwt = require("jsonwebtoken");
 
 const generateToken = (payload) => {
     let token;
-    if (userId) {
+    if (payload) {
         token = jwt.sign(payload, process.env.JWT_SECRET, {
             algorithm: "HS256",
             expiresIn: "30d",
         });
     }
-    return token;
+    return `Bearer ${token}`;
 };
 
 module.exports = generateToken;
