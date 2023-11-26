@@ -58,7 +58,7 @@ const testSchema = new mongoose.Schema(
 //middleware set status test
 testSchema.pre("save", function (next) {
     const now = new Date();
-    if (this.startTime && this.endTime) {
+    if (this.startTime || this.endTime) {
         if (now < this.startTime) {
             this.status = "Scheduled";
         } else if (now > this.endTime) {

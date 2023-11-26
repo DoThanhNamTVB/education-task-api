@@ -3,7 +3,6 @@ const Subject = require("../../../model/Subject");
 const Test = require("../../../model/Test");
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 
 const registerTest = asyncHandler(async (req, res) => {
     try {
@@ -40,7 +39,7 @@ const getAllTestStudent = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
         const findtest = await Test.find({
-            "student.studentId": Schema.ObjectId(student._id),
+            "student.studentId": mongoose.Types.ObjectId(student._id),
         })
             .select({
                 testName: 1,
@@ -66,7 +65,7 @@ const getUpComingTest = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
         const findAllTestComing = await Test.find({
-            "student.studentId": Schema.ObjectId(student._id),
+            "student.studentId": mongoose.Types.ObjectId(student._id),
             status: "Scheduled",
         })
             .select({
@@ -173,7 +172,7 @@ const toResultTest = asyncHandler(async (req, res) => {
 
         if (getTest) {
             const index = getTest.student.findIndex(
-                (item) => item._id === Schema.ObjectId(idTestStudent)
+                (item) => item._id === mongoose.Types.ObjectId(idTestStudent)
             );
 
             const date1 = getTest.student[index].startTest;

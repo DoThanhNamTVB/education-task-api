@@ -24,7 +24,7 @@ const questionSchema = new mongoose.Schema(
             },
         ],
         status: {
-            type: Boolean,
+            type: String,
             required: true,
             enum: ["active", "inactive", "draft"],
             default: "active",
