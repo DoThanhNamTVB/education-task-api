@@ -22,8 +22,6 @@ const testSchema = new mongoose.Schema(
                 startTest: Date,
                 during: Number,
                 result: String,
-                correctAnswer: Number,
-                quantityAnswer: Number,
                 status: {
                     type: String,
                     enum: ["Completed", "Not-complete"],

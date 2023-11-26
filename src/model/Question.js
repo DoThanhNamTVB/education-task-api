@@ -20,7 +20,7 @@ const questionSchema = new mongoose.Schema(
         answer: [
             {
                 content: String,
-                isTrue: false,
+                isTrue: Boolean,
             },
         ],
         status: {
