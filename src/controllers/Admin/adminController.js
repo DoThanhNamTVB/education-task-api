@@ -27,13 +27,13 @@ const register = asyncHandler(async (req, res) => {
                     role: +role,
                 });
 
-                const token = userNew
-                    ? generateToken({
-                          username: userNew.username,
-                          password: userNew.password,
-                          role: userNew.role,
-                      })
-                    : null;
+                // const token = userNew
+                //     ? generateToken({
+                //           username: userNew.username,
+                //           password: userNew.password,
+                //           role: userNew.role,
+                //       })
+                //     : null;
                 res.status(201).json({
                     username: userNew.username,
                     role:
@@ -42,7 +42,7 @@ const register = asyncHandler(async (req, res) => {
                             : userNew.role === 2
                             ? "teacher"
                             : "student",
-                    token: token,
+                    // token: token,
                 });
             } else {
                 throw new Error("User has existed");
@@ -230,6 +230,7 @@ module.exports = {
     register,
     login,
     logout,
+    removeUser,
     unblockUser,
     addSubject,
     removeSubject,

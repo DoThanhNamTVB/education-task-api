@@ -10,7 +10,7 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser(async (id, done) => {
     try {
         const user = await User.findById(id);
-        done(null, user);
+        user ? done(null, user) : done(null, false);
     } catch (error) {
         done(error, null);
     }
@@ -67,7 +67,6 @@ passport.deserializeUser(async (id, done) => {
 // );
 
 passport.use(
-    "local-signin",
     new localStrategy(
         {
             usernameField: "username",
@@ -77,9 +76,13 @@ passport.use(
         async (req, username, password, done) => {
             const user = await User.findOne({ username: username });
             if (!user || !user.checkPassword(password)) {
-                return done(null, false);
+                return done(null, false, {
+                    message: "username or password incorrect",
+                });
+            } else if (user?.status === "block") {
+                return done(null, false, { message: "Account was blocked" });
             } else {
-                const token = generateToken(user);
+                const token = user ? generateToken(user?._id) : null;
                 user.token = token;
 
                 return done(null, user);

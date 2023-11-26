@@ -11,15 +11,14 @@ const isAuth = (req, res, next) => {
 };
 
 const isAdmin = (req, res, next) => {
-    const token = req.headers.token.split(" ")[1];
-    if (!token) {
-        return res.status(401).json({
-            message: "Not token, authorization denied",
-        });
-    }
     try {
-        const decoded = jwt.verify(token, process.env.jWT_SECRET);
-        console.log(decoded);
+        if (req.isAuthenticated() && +req.user.role === 1) {
+            next();
+        } else {
+            res.status(401).json({
+                message: "You are not admin",
+            });
+        }
     } catch (error) {
         res.status(500);
         throw new Error(error);
@@ -31,7 +30,7 @@ const isTeacher = (req, res, next) => {
         next();
     } else {
         res.status(401).json({
-            message: "You are not admin",
+            message: "You are not teacher",
         });
     }
 };
@@ -41,7 +40,7 @@ const isStudent = (req, res, next) => {
         next();
     } else {
         res.status(401).json({
-            message: "You are not admin",
+            message: "You are not student",
         });
     }
 };

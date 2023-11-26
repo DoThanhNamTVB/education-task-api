@@ -1,14 +1,10 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-const generateToken = (payload) => {
-    let token;
-    if (payload) {
-        token = jwt.sign(payload, process.env.JWT_SECRET, {
-            algorithm: "HS256",
-            expiresIn: "30d",
-        });
-    }
+const generateToken = (userId) => {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+        expiresIn: "30d",
+    });
     return `Bearer ${token}`;
 };
 

@@ -1,8 +1,8 @@
 const express = require("express");
-const userRoute = require("./admin_Route");
+const adminRoute = require("./admin_Route");
 
 const initRoutes = (app) => {
-    app.use("/api/user", userRoute);
+    app.use("/api/admin", adminRoute);
 };
 
 module.exports = initRoutes;

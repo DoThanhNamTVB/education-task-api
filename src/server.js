@@ -33,35 +33,21 @@ app.use(
     })
 );
 
+//setup passport
+// app.use(flash()); //enable message passport
+app.use(passport.initialize());
+app.use(passport.session());
+
 //middleware http logger
 app.use(morgan("dev"));
 
 //Middleare cors(cross origin resoure sharing)
 app.use(cors());
 
-//setup passport
-// app.use(flash()); //enable message passport
-app.use(passport.initialize());
-app.use(passport.session());
-
-// app.use((req, res, next) => {
-//     app.locals.signinMessage = req.flash("signinMessage");
-//     app.locals.signupMessage = req.flash("signupMessage");
-//     app.locals.user = req.user;
-//     // console.log(app.locals)
-//     next();
-// });
 //Routing
 initRoutes(app);
 
-// error handle middleware
-// app.use((err, req, res, next) => {
-//     if (err) {
-//         res.status(401).json({
-//             message: err.message,
-//         });
-//     }
-// });
+//middleware error handle
 app.use(notFound);
 app.use(errorHandler);
 //run server
