@@ -46,6 +46,7 @@ const getAllTestStudent = asyncHandler(async (req, res) => {
             })
             .populate({
                 path: "subjectId",
+                model: "Subject",
                 select: "subjectCode subjectName",
             });
         // .lean();
@@ -73,6 +74,7 @@ const getUpComingTest = asyncHandler(async (req, res) => {
             })
             .populate({
                 path: "subjectId",
+                model: "Subject",
                 select: "subjectCode subjectName",
             });
 
@@ -121,6 +123,7 @@ const startTest = asyncHandler(async (req, res) => {
             .select("question")
             .populate({
                 path: "question.questionId",
+                model: "Question",
                 select: "_id questionName answer.content",
             });
         return res
@@ -168,6 +171,7 @@ const toResultTest = asyncHandler(async (req, res) => {
 
         const getTest = await Test.findById(testId).populate({
             path: "question.questionId",
+            model: "Question",
         });
 
         if (getTest) {
@@ -210,6 +214,7 @@ const getAllCompleteTest = asyncHandler(async (req, res) => {
             )
             .populate({
                 path: "subjectId",
+                model: "Subject",
                 select: "subjectName",
             });
 

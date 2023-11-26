@@ -66,6 +66,7 @@ const searchQuestion = asyncHandler(async (req, res) => {
             questionName: { $regex: `/${questionName.trim()}/i` },
         }).populate({
             path: "subjectId",
+            model: "Subject",
         });
 
         if (search) {

@@ -18,8 +18,16 @@ const {
     getResultTest,
     toResultTest,
 } = require("../controllers/User/Student/studentController");
+const {
+    getAllTest,
+    getTestDetailById,
+    getUserDetail,
+} = require("../controllers/User/User/userController");
 
 //router user
+router.get("/get-user-detail", isAuth, getUserDetail);
+router.get("/get-all-test", isAuth, getAllTest);
+router.get("/get-test-detail-by-id", isAuth, getTestDetailById);
 
 //router teacher
 router.post("/add-question-subject", isTeacher, addQuestion);
