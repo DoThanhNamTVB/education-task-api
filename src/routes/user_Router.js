@@ -48,3 +48,5 @@ router.put("/start-test", isStudent, startTest);
 router.put("/to-result-test", isStudent, toResultTest);
 router.get("/get-all-complete-test", isStudent, getAllCompleteTest);
 router.get("/searh-question", isStudent, getResultTest);
+
+module.exports = router;
