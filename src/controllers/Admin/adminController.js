@@ -27,22 +27,17 @@ const register = asyncHandler(async (req, res) => {
                     role: +role,
                 });
 
-                // const token = userNew
-                //     ? generateToken({
-                //           username: userNew.username,
-                //           password: userNew.password,
-                //           role: userNew.role,
-                //       })
-                //     : null;
                 res.status(201).json({
-                    username: userNew.username,
-                    role:
-                        userNew.role === 1
-                            ? "admin"
-                            : userNew.role === 2
-                            ? "teacher"
-                            : "student",
-                    // token: token,
+                    message: "Create account oke",
+                    user: {
+                        username: userNew.username,
+                        role:
+                            userNew.role === 1
+                                ? "admin"
+                                : userNew.role === 2
+                                ? "teacher"
+                                : "student",
+                    },
                 });
             } else {
                 throw new Error("User has existed");
@@ -83,18 +78,9 @@ const login = asyncHandler(async (req, res) => {
     }
 });
 
-const logout = async (req, res) => {
-    req.logout();
-    // req.clearCookie("connect.sid");
-    res.cookie("connect.sid", "", { expires: 0 });
-    res.status(200).json({
-        message: "Logout success",
-    });
-};
-
 const removeUser = asyncHandler(async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
         const user = await User.findById({ _id: userId });
         if (user) {
             user.deleteOne();
@@ -115,7 +101,7 @@ const removeUser = asyncHandler(async (req, res) => {
 
 const unblockUser = asyncHandler(async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId } = req.params;
         const user = await User.findById({ _id: userId });
         if (user) {
             if (user.status === "active") {
@@ -129,7 +115,7 @@ const unblockUser = asyncHandler(async (req, res) => {
                 message: `Account ${user.username} has ${user.status}`,
             });
         } else {
-            res.status(400).json({
+            res.status(404).json({
                 message: `Not found user`,
             });
         }
@@ -182,10 +168,15 @@ const removeSubject = asyncHandler(async (req, res) => {
                 message: "subjectId is require field",
             });
         }
-        const result = await Subject.deleteOne({ _id: subjectId });
-        if (subject) {
+        const result = await Subject.findByIdAndDelete(subjectId);
+        if (!result) {
             return res.status(400).json({
                 message: "Subject not found in database",
+            });
+        } else {
+            return res.status(200).json({
+                message: "Subject deleted",
+                subject: result,
             });
         }
     } catch (error) {
@@ -229,7 +220,6 @@ const getAllStudent = asyncHandler(async (req, res) => {
 module.exports = {
     register,
     login,
-    logout,
     removeUser,
     unblockUser,
     addSubject,

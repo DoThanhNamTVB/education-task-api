@@ -231,7 +231,7 @@ const getAllCompleteTest = asyncHandler(async (req, res) => {
 //get result test
 const getResultTest = asyncHandler(async (req, res) => {
     try {
-        const { testId } = req.body;
+        const { testId } = req.params;
         const studenttest = req.user;
         const getTest = await Test.findById(testId);
         if (getTest) {

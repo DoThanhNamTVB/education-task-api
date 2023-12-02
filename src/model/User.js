@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
             type: Number,
             required: true,
             // 1 : admin, 2 : giáo viên , 3 : học sinh
-            enum: [0, 1, 2],
+            enum: [1, 2, 3],
         },
         // image: {
         //     path: String,

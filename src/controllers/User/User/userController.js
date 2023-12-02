@@ -58,7 +58,7 @@ const getAllTest = asyncHandler(async (req, res) => {
 
 const getTestDetailById = asyncHandler(async (req, res) => {
     try {
-        const { testId } = req.body;
+        const { testId } = req.params;
         if (!testId) {
             return res.status(404).json({
                 message: "testId is require",

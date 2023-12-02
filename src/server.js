@@ -8,6 +8,9 @@ const { notFound, errorHandler } = require("./middleware/errorHandler");
 const initRoutes = require("./routes");
 const passport = require("passport");
 const session = require("express-session");
+const swaggerUI = require("swagger-ui-express");
+const YAML = require("yamljs"); // Để đọc tệp YAML
+const swaggerDocument = YAML.load("src/swagger.yaml");
 // const flash = require("connect-flash");
 const port = process.env.PORT;
 
@@ -43,6 +46,9 @@ app.use(morgan("dev"));
 
 //Middleare cors(cross origin resoure sharing)
 app.use(cors());
+
+//swagger setup
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 //Routing
 initRoutes(app);

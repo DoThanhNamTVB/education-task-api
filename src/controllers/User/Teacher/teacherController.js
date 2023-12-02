@@ -86,7 +86,8 @@ const searchQuestion = asyncHandler(async (req, res) => {
 
 const updateQuestion = asyncHandler(async (req, res) => {
     try {
-        const { questionId, subjectId } = req.body;
+        const { questionId } = req.params;
+        const { subjectId, questionName, answer, status } = req.body;
         //check question
         const checkQuestion = await Question.findById(questionId);
         if (!checkQuestion) {
@@ -108,7 +109,6 @@ const updateQuestion = asyncHandler(async (req, res) => {
                 checkQuestion.subjectId = mongoose.Types.ObjectId(subjectId);
             }
         }
-        const { questionName, answer, status } = req.body;
 
         //fuction check if has answer
         if (answer) {

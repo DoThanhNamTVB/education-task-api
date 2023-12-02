@@ -1,10 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const {
-    isAdmin,
-    isAuthHandler,
-    isAdminHanndler,
-} = require("../middleware/auth");
+const { isAdmin } = require("../middleware/jwt-passport");
+
 const {
     register,
     removeUser,
@@ -14,46 +11,32 @@ const {
     getAllSubject,
     getAllTeacher,
     getAllStudent,
+    login,
 } = require("../controllers/Admin/adminController");
 const passport = require("passport");
-const generateToken = require("../utils/generateToken");
+const authenJWT = passport.authenticate("jwt", { session: false });
 
-router.post("/register", passport.authenticate("local-signup"), (req, res) => {
-    const token = generateToken(req.user);
-    res.status(200).json({
-        message: "Login successful",
-        user: req.user,
-        token: token,
-    });
-});
-router.post("create-account", isAuthHandler, isAdminHanndler, register);
-router.post("/login", passport.authenticate("local"), (req, res) => {
-    const token = generateToken(req.user);
-    res.status(200).json({
-        message: "Login successful",
-        user: req.user,
-        token: token,
-    });
-});
+// router.post("/register", passport.authenticate("local-signup"), (req, res) => {
+//     const token = generateToken(req.user);
+//     res.status(200).json({
+//         message: "Login successful",
+//         user: req.user,
+//         token: token,
+//     });
+// });
+router.post("/register", authenJWT, isAdmin, register);
+router.post("/login", login);
 
-router.post("/logout", (req, res, next) => {
-    req.logout((err) => {
-        if (err) {
-            next(err);
-        }
-    });
-    res.status(200).json({
-        message: "Logout successful",
-    });
-});
-
-router.route("/").delete(isAdmin, removeUser).put(isAdmin, unblockUser);
+router
+    .route("/:userId")
+    .delete(authenJWT, isAdmin, removeUser)
+    .put(authenJWT, isAdmin, unblockUser);
 router
     .route("/subject")
-    .post(isAdmin, addSubject)
-    .delete(isAdmin, removeSubject)
-    .get(isAdmin, getAllSubject);
+    .post(authenJWT, isAdmin, addSubject)
+    .delete(authenJWT, isAdmin, removeSubject)
+    .get(authenJWT, isAdmin, getAllSubject);
 router.get("/all-teacher", isAdmin, getAllTeacher);
-router.get("/all-student", isAdmin, getAllStudent);
+router.get("/all-student", authenJWT, isAdmin, getAllStudent);
 
 module.exports = router;

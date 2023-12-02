@@ -27,7 +27,7 @@ passport.use(
         async (req, username, password, done) => {
             const { role } = req.body;
             if (!username || !password || !role) {
-                return done(null, false, { message: "abc" });
+                return done(null, false);
             }
             if (+role !== 1 && +role !== 2 && +role !== 3) {
                 return done(null, false);
