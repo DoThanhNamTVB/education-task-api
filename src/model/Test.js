@@ -31,7 +31,6 @@ const testSchema = new mongoose.Schema(
         ],
         status: {
             type: String,
-            required: true,
             enum: ["Scheduled", "Active", "Completed", "Draf", "Cancel"],
         },
         startTime: { type: Date },
@@ -58,7 +57,7 @@ const testSchema = new mongoose.Schema(
 //middleware set status test
 testSchema.pre("save", function (next) {
     const now = new Date();
-    if (this.startTime || this.endTime) {
+    if (this.startTime !== null && this.endTime !== null) {
         if (now < this.startTime) {
             this.status = "Scheduled";
         } else if (now > this.endTime) {
@@ -69,6 +68,20 @@ testSchema.pre("save", function (next) {
     } else {
         this.status = "Draft";
     }
+    next();
+});
+
+//middleware convert to ObjectId
+
+testSchema.pre("save", function (next) {
+    this.authTest = new mongoose.Types.ObjectId(this.authTest);
+
+    this.question = this.question.map((item) => {
+        return {
+            questionId: new mongoose.Types.ObjectId(item.questionId),
+        };
+    });
+
     next();
 });
 

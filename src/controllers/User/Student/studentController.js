@@ -39,18 +39,23 @@ const getAllTestStudent = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
         const findtest = await Test.find({
-            "student.studentId": mongoose.Types.ObjectId(student._id),
+            "student.studentId": student._id,
         })
-            .select({
-                testName: 1,
+            .populate({
+                path: "authTest",
+                model: "User",
+                select: "username",
             })
             .populate({
                 path: "subjectId",
                 model: "Subject",
                 select: "subjectCode subjectName",
+            })
+            .populate({
+                path: "question.questionId",
+                model: "question",
+                select: "questionName answer.content",
             });
-        // .lean();
-
         res.status(200).json({
             message: "Get all test student successfull",
             test: findtest || [],
@@ -66,18 +71,24 @@ const getUpComingTest = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
         const findAllTestComing = await Test.find({
-            "student.studentId": mongoose.Types.ObjectId(student._id),
+            "student.studentId": student._id,
             status: "Scheduled",
         })
-            .select({
-                testName: 1,
+            .populate({
+                path: "authTest",
+                model: "User",
+                select: "username",
             })
             .populate({
                 path: "subjectId",
                 model: "Subject",
                 select: "subjectCode subjectName",
+            })
+            .populate({
+                path: "question.questionId",
+                model: "question",
+                select: "questionName answer.content",
             });
-
         res.status(200).json({
             message: "Get upcoming test successfull",
             test: findAllTestComing || [],
@@ -99,6 +110,12 @@ const startTest = asyncHandler(async (req, res) => {
             return res.status(404).json({ message: "Test is not exist" });
         }
 
+        //check test is already
+        if (test.status !== "Active") {
+            return res.status(404).json({
+                message: `Test is not already(status : ${test.status})`,
+            });
+        }
         //check student in test
         const studentIndex = test.student.findIndex(
             (s) => s.studentId.toString() === student._id.toString()
@@ -115,7 +132,7 @@ const startTest = asyncHandler(async (req, res) => {
         }
 
         //update startTest time
-        test.student[studentIndex].startTest = new Date.now();
+        test.student[studentIndex].startTest = new Date();
         await test.save();
 
         //get question
@@ -123,7 +140,7 @@ const startTest = asyncHandler(async (req, res) => {
             .select("question")
             .populate({
                 path: "question.questionId",
-                model: "Question",
+                model: "question",
                 select: "_id questionName answer.content",
             });
         return res
@@ -148,10 +165,10 @@ function calculateMinutesBetweenDates(date1, date2) {
 //list answer = [{questionId, answerId}]
 const toResultTest = asyncHandler(async (req, res) => {
     try {
-        const { testId, idTestStudent } = req.body;
-
+        const user = req.user;
+        const { testId, listAnswer } = req.body;
+        const studentId = user._id;
         let total = 0;
-        const { listAnswer } = req.body;
         for (const submitanswer of listAnswer) {
             const { questionId, selectedAnswer } = submitanswer;
 
@@ -171,16 +188,15 @@ const toResultTest = asyncHandler(async (req, res) => {
 
         const getTest = await Test.findById(testId).populate({
             path: "question.questionId",
-            model: "Question",
+            model: "question",
         });
 
         if (getTest) {
-            const index = getTest.student.findIndex(
-                (item) => item._id === mongoose.Types.ObjectId(idTestStudent)
-            );
-
+            const index = getTest.student.findIndex((item) => {
+                return item.studentId.equals(studentId) === true;
+            });
             const date1 = getTest.student[index].startTest;
-            const date2 = new Date.now();
+            const date2 = new Date();
             const during = calculateMinutesBetweenDates(date1, date2);
 
             getTest.student[index].during = during;
@@ -205,19 +221,33 @@ const toResultTest = asyncHandler(async (req, res) => {
 const getAllCompleteTest = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
-        const getTestComplete = await Test.find({
-            "student.studentId": student._id,
-            "student.status": "Completed",
-        })
-            .select(
-                "_id testName subjectId student startTime endTime duringStart"
-            )
-            .populate({
-                path: "subjectId",
-                model: "Subject",
-                select: "subjectName",
-            });
+        // const getTestComplete = await Test.find({
+        // "student.studentId": student._id,
+        // "student.status": "Completed",
+        // })
+        //     .select(
+        //         "_id testName subjectId student startTime endTime duringStart"
+        //     )
+        //     .populate({
+        //         path: "subjectId",
+        //         model: "Subject",
+        //         select: "subjectName",
+        //     });
 
+        const getTestComplete = await Test.aggregate([
+            {
+                $unwind: "$student",
+            },
+            {
+                $match: {
+                    "student.studentId": student._id,
+                    "student.status": "Completed",
+                },
+            },
+            // {
+            //     $replaceRoot: { newRoot: "$student" },
+            // },
+        ]);
         return res.status(200).json({
             message: "Get completed test success",
             test: getTestComplete || null,
@@ -235,12 +265,13 @@ const getResultTest = asyncHandler(async (req, res) => {
         const studenttest = req.user;
         const getTest = await Test.findById(testId);
         if (getTest) {
-            const index = getTest.student.findIndex(
-                (item) => item.studentId === studenttest._id
-            );
+            const totalQuestion = getTest.question.length;
+            const index = getTest.student.findIndex((item) => {
+                return item.studentId.equals(studenttest._id) === true;
+            });
             const result = getTest.student[index]?.result || null;
             return res.status(200).json({
-                result: result,
+                result: result + "/" + totalQuestion,
             });
         } else {
             return res.status(404).json("Not found test in database");

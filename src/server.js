@@ -18,7 +18,7 @@ const port = process.env.PORT;
 DB.connect();
 
 //use init passport
-require("./passport/local-auth");
+require("./passport/jwt-auth");
 
 //middleware express
 app.use(express.urlencoded({ extended: true }));

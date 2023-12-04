@@ -15,13 +15,17 @@ const addQuestion = asyncHandler(async (req, res) => {
         }
         const { questionName, answer, status } = req.body;
 
+        console.log(typeof answer);
         //fuction check answer
         let checkAnnswer = false;
         if (answer?.length > 0) {
             const check = answer.every((item) => {
-                typeof item.isTrue === "boolean" &&
-                    item.content !== null &&
-                    item.isTrue !== null;
+                return (
+                    typeof item.isTrue === "boolean" &&
+                    item.content.trim() !== null &&
+                    item.content.trim() !== "" &&
+                    item.isTrue !== null
+                );
             });
             checkAnnswer = check;
         }
@@ -43,7 +47,7 @@ const addQuestion = asyncHandler(async (req, res) => {
         const question = await Question.create({
             subjectId: subjectId,
             questionName: questionName,
-            answer: answer,
+            answer: [...answer],
             status: status,
         });
 
@@ -59,11 +63,11 @@ const addQuestion = asyncHandler(async (req, res) => {
 
 const searchQuestion = asyncHandler(async (req, res) => {
     try {
-        const { questionName } = req.body;
+        const { questionName } = req.query;
 
         //search by question name
         const search = await Question.find({
-            questionName: { $regex: `/${questionName.trim()}/i` },
+            questionName: { $regex: questionName.trim(), $options: "i" },
         }).populate({
             path: "subjectId",
             model: "Subject",
@@ -88,6 +92,12 @@ const updateQuestion = asyncHandler(async (req, res) => {
     try {
         const { questionId } = req.params;
         const { subjectId, questionName, answer, status } = req.body;
+        //checkquestiion id
+        if (!questionId) {
+            return res.status(404).json({
+                message: "question id is null",
+            });
+        }
         //check question
         const checkQuestion = await Question.findById(questionId);
         if (!checkQuestion) {
@@ -99,7 +109,6 @@ const updateQuestion = asyncHandler(async (req, res) => {
         //check if has subjectid
         if (subjectId) {
             const findSubject = await Subject.findById(subjectId);
-            const checkQuestion = await Question.findById(questionId);
 
             if (!findSubject) {
                 return res.status(404).json({
@@ -116,31 +125,43 @@ const updateQuestion = asyncHandler(async (req, res) => {
             //check typeof answer
             if (answer?.length > 0) {
                 const check = answer.every((item) => {
-                    typeof item.isTrue === "boolean" &&
-                        item.content !== null &&
-                        item.isTrue !== null;
+                    return (
+                        typeof item.isTrue === "boolean" &&
+                        item.content.trim() !== null &&
+                        item.content.trim() !== "" &&
+                        item.isTrue !== null
+                    );
                 });
                 checkAnnswer = check;
             }
-            if (answer === true) {
-                const getIndex = [];
-                answer.forEach((item, index) => {
-                    if (item.id) {
-                        getIndex.push(index);
-                    } else {
-                        checkAnnswer.answer.push({
-                            content: item.content,
-                            isTrue: item.isTrue,
-                        });
-                    }
-                });
 
-                getIndex?.length > 0 &&
-                    getIndex.forEach((item) => {
-                        checkQuestion.answer[item].content =
-                            answer[item].content;
-                        checkQuestion.answer[item].isTrue = answer[item].isTrue;
-                    });
+            //return if false
+            if (checkAnnswer === false) {
+                return res.status(400).json({
+                    message: "data answer is not correct format",
+                });
+            }
+
+            if (checkAnnswer === true) {
+                checkQuestion.answer = answer;
+                // const getIndex = [];
+                // answer.forEach((item, index) => {
+                //     if (item._id) {
+                //         getIndex.push(index);
+                //     } else {
+                //         checkQuestion.answer.push({
+                //             content: item.content,
+                //             isTrue: item.isTrue,
+                //         });
+                //     }
+                // });
+
+                // getIndex?.length > 0 &&
+                //     getIndex.forEach((item) => {
+                //         checkQuestion.answer[item].content =
+                //             answer[item].content;
+                //         checkQuestion.answer[item].isTrue = answer[item].isTrue;
+                //     });
             }
         }
 
@@ -175,7 +196,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
 
 const deleteQuestion = asyncHandler(async (req, res) => {
     try {
-        const { questionId } = req.body;
+        const { questionId } = req.params;
 
         if (questionId) {
             const response = await Question.findByIdAndDelete(questionId);
@@ -186,12 +207,12 @@ const deleteQuestion = asyncHandler(async (req, res) => {
                 });
             } else {
                 return res.status(404).json({
-                    message: "not found id question",
+                    message: "No this question in database",
                 });
             }
         } else {
             return res.status(400).json({
-                message: "question id is require",
+                message: "question id is null",
             });
         }
     } catch (error) {
@@ -214,7 +235,8 @@ const changeStatusQuestion = asyncHandler(async (req, res) => {
         const dataStatus = ["active", "inactive", "draft"];
         if (status && !dataStatus.includes(status)) {
             return res.status(400).json({
-                message: "status is invalid",
+                message:
+                    "status is invalid, it maybe 'active', 'inactive', 'draft'",
             });
         }
 
@@ -229,7 +251,7 @@ const changeStatusQuestion = asyncHandler(async (req, res) => {
             });
         } else {
             return res.status(400).json({
-                message: "Not found question",
+                message: "Not found question with this id",
             });
         }
     } catch (error) {
@@ -269,19 +291,22 @@ const createTest = asyncHandler(async (req, res) => {
             const getQuestionId = await Question.find().select("_id");
             const dataQuestion = [];
             getQuestionId?.forEach((item) => {
-                dataQuestion.push(item._id);
+                dataQuestion.push(item._id.toString());
             });
             //check questionId in dataquestion
             let resultCheckQuestionId = true;
-            question?.forEach((item) => {
-                if (!dataQuestion.includes(item)) {
+            const indexQuestionFalse = [];
+
+            question?.forEach((item, index) => {
+                if (!dataQuestion.includes(item.questionId)) {
                     resultCheckQuestionId = false;
+                    indexQuestionFalse.push(index + 1);
                 }
             });
 
             if (resultCheckQuestionId === false) {
                 return res.status(404).json({
-                    message: "Not found question in database, please reselect",
+                    message: `Not found question ${indexQuestionFalse} in database`,
                 });
             }
 

@@ -35,7 +35,7 @@ router.get("/get-test-detail/:testId", authenJWT, getTestDetailById);
 
 //router teacher
 router.post("/add-question-subject", authenJWT, isTeacher, addQuestion);
-router.get("/searh-question", authenJWT, isTeacher, searchQuestion);
+router.get("/search-question", authenJWT, isTeacher, searchQuestion);
 router
     .route("/question-action/:questionId")
     .put(authenJWT, isTeacher, updateQuestion)

@@ -22,8 +22,9 @@ paths:
         post:
             tags:
                 - "admin"
-            summary: user register
-            description: user register
+            summary: user Register
+            security:
+                - Bearer: []
             requestBody:
                 content:
                     application/json:
@@ -32,7 +33,7 @@ paths:
                             properties:
                                 username:
                                     type: string
-                                    example: Nguyen Van loi
+                                    example: Nguyen Van Nam
                                 password:
                                     type: string
                                     example: 123456789a
@@ -55,6 +56,9 @@ paths:
     #         tags:
     #             - "admin"
     #         summary: admin create account
+    # security:
+    #   - Bearer: []
+
     #         requestBody:
     #             content:
     #                 application/json:
@@ -91,6 +95,8 @@ paths:
                 - "teacher"
                 - "student"
             summary: "User login"
+            security:
+                - Bearer: []
             requestBody:
                 content:
                     application/json:
@@ -103,7 +109,6 @@ paths:
                                 password:
                                     type: string
                                     example: "123456789a"
-
             responses:
                 "201":
                     description: "Login successful"
@@ -129,6 +134,8 @@ paths:
             tags:
                 - "admin"
             summary: remove user
+            security:
+                - Bearer: []
             parameters:
                 - name: userId
                   in: path
@@ -160,6 +167,8 @@ paths:
             tags:
                 - "admin"
             summary: unblock user
+            security:
+                - Bearer: []
             parameters:
                 - name: userId
                   in: path
@@ -190,6 +199,8 @@ paths:
             tags:
                 - "admin"
             summary: remove user
+            security:
+                - Bearer: []
             requestBody:
                 description: information about subject
                 content:
@@ -198,7 +209,7 @@ paths:
                             type: object
                             properties:
                                 subjectCode:
-                                    type: string
+                                    type: number
                                     example: 101
                                 subjectName:
                                     type: string
@@ -227,6 +238,8 @@ paths:
             tags:
                 - "admin"
             summary: unblock user
+            security:
+                - Bearer: []
             requestBody:
                 description: id of Subject
                 content:
@@ -258,6 +271,8 @@ paths:
             tags:
                 - "admin"
             summary: get all subject
+            security:
+                - Bearer: []
             responses:
                 "200":
                     description: "get oke"
@@ -274,14 +289,14 @@ paths:
                 "500":
                     description: "Server error"
 
-    /all-teacher:
+    /admin/all-teacher:
         get:
-            summary: Get all teachers
             tags:
                 - admin
-            description: Retrieve a list of all teachers.
+            summary: Get all teachers
             security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
+                - Bearer: []
+            description: Retrieve a list of all teachers.
             responses:
                 "200":
                     description: A list of teachers
@@ -294,14 +309,15 @@ paths:
                 "401":
                     description: Unauthorized
 
-    /all-student:
+    /admin/all-student:
         get:
             summary: Get all students
+            security:
+                - Bearer: []
+
             tags:
                 - admin
             description: Retrieve a list of all students.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: A list of students
@@ -316,14 +332,15 @@ paths:
 
     #user api
 
-    /get-user-detail:
+    /user/get-user-detail:
         get:
             summary: Get user detail
+            security:
+                - Bearer: []
+
             tags:
                 - user
             description: Retrieve details of the authenticated user.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: User details retrieved successfully
@@ -341,14 +358,15 @@ paths:
                 "500":
                     description: "Server error"
 
-    /get-all-test:
+    /user/get-all-test:
         get:
             summary: Get all tests
+            security:
+                - Bearer: []
+
             tags:
                 - user
             description: Retrieve a list of all tests.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: List of tests retrieved successfully
@@ -370,9 +388,12 @@ paths:
                 "500":
                     description: "Server error"
 
-    /get-test-detail/{testId}:
+    /user/get-test-detail/{testId}:
         get:
             summary: Get test details by ID
+            security:
+                - Bearer: []
+
             tags:
                 - user
             description: Retrieve details of a test by its ID.
@@ -383,8 +404,6 @@ paths:
                   required: true
                   schema:
                       type: string
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: Test details retrieved successfully
@@ -406,14 +425,15 @@ paths:
 
     # api teacher
 
-    /add-question-subject:
+    /user/add-question-subject:
         post:
             summary: Add a question to a subject
+            security:
+                - Bearer: []
+
             tags:
                 - teacher
             description: Add a question to a subject.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             requestBody:
                 content:
                     application/json:
@@ -422,19 +442,24 @@ paths:
                             properties:
                                 subjectId:
                                     type: string
+                                    example: 656aa3ff386d012be7116155
                                 questionName:
                                     type: string
+                                    example: What is nodejs ?
                                 answer:
                                     type: array
                                     items:
                                         type: object
                                         properties:
-                                            isTrue:
-                                                type: boolean
                                             content:
                                                 type: string
+                                                example: Node.js is an open source server environment
+                                            isTrue:
+                                                type: boolean
+                                                example: true
                                 status:
                                     type: string
+                                    enum: ["active", "inactive", "draft"]
             responses:
                 "201":
                     description: Question added successfully
@@ -452,14 +477,15 @@ paths:
                 "500":
                     description: "Server error"
 
-    /search-question:
+    /user/search-question:
         get:
             summary: Search questions
+            security:
+                - Bearer: []
+
             tags:
                 - teacher
             description: Search questions by question name.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             parameters:
                 - name: questionName
                   in: query
@@ -485,14 +511,15 @@ paths:
                 "500":
                     description: "Server error"
 
-    /question-action/{questionId}:
+    /user/question-action/{questionId}:
         put:
             summary: Update a question
+            security:
+                - Bearer: []
+
             tags:
                 - teacher
             description: Update a question by its ID.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             parameters:
                 - name: questionId
                   in: path
@@ -521,6 +548,7 @@ paths:
                                                 type: string
                                 status:
                                     type: string
+
             responses:
                 "200":
                     description: Question updated successfully
@@ -544,11 +572,12 @@ paths:
 
         delete:
             summary: Delete a question
+            security:
+                - Bearer: []
+
             tags:
                 - teacher
             description: Delete a question by its ID.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             parameters:
                 - name: questionId
                   in: path
@@ -575,14 +604,15 @@ paths:
                 "500":
                     description: "Server error"
 
-    /change-status-question:
+    /user/change-status-question:
         put:
             summary: Change the status of a question
+            security:
+                - Bearer: []
+
             tags:
                 - teacher
             description: Change the status of a question by its ID.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             requestBody:
                 content:
                     application/json:
@@ -610,14 +640,15 @@ paths:
                 "404":
                     description: Question not found
 
-    /create-test:
+    /user/create-test:
         post:
             summary: Create a test
+            security:
+                - Bearer: []
+
             tags:
                 - teacher
             description: Create a test.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             requestBody:
                 content:
                     application/json:
@@ -626,18 +657,29 @@ paths:
                             properties:
                                 testName:
                                     type: string
+                                    example: "Test 15 min"
                                 subjectId:
                                     type: string
+                                    example: 656aa3ff386d012be7116155
                                 startTime:
                                     type: string
+                                    format: "date-time"
+                                    example: 2023-12-03T22:52:51.987+00:00
                                 endTime:
                                     type: string
+                                    format: "date-time"
+                                    example: 2023-12-06T22:52:51.987+00:00
                                 duringStart:
                                     type: number
+                                    example: 60
                                 question:
                                     type: array
                                     items:
-                                        type: string # Assuming question IDs
+                                        type: object
+                                        properties:
+                                            questionId:
+                                                type: string
+                                                example: 656d06c34d7773c84a14763e
             responses:
                 "201":
                     description: Test created successfully
@@ -657,14 +699,15 @@ paths:
 
     #student api
 
-    /register-into-test:
+    /user/register-into-test:
         post:
             summary: Register for a test
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Register a student for a test.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             requestBody:
                 content:
                     application/json:
@@ -688,14 +731,15 @@ paths:
                 "404":
                     description: Test not found
 
-    /get-all-test-student:
+    /user/get-all-test-student:
         get:
             summary: Get all tests for a student
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Get all tests registered by a student.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: Tests retrieved successfully
@@ -713,14 +757,15 @@ paths:
                 "500":
                     description: Internal Server Error
 
-    /get-up-coming-test:
+    /user/get-up-coming-test:
         get:
             summary: Get upcoming tests for a student
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Get upcoming tests for a student.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: Upcoming tests retrieved successfully
@@ -738,14 +783,15 @@ paths:
                 "500":
                     description: Internal Server Error
 
-    /start-test:
+    /user/start-test:
         put:
             summary: Start a test
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Start a test for a student.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             requestBody:
                 content:
                     application/json:
@@ -773,14 +819,15 @@ paths:
                 "404":
                     description: Test not found or not registered
 
-    /to-result-test:
+    /user/to-result-test:
         put:
             summary: Submit test results
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Submit test results for a student.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             requestBody:
                 content:
                     application/json:
@@ -788,8 +835,6 @@ paths:
                             type: object
                             properties:
                                 testId:
-                                    type: string
-                                idTestStudent:
                                     type: string
                                 listAnswer:
                                     type: array
@@ -821,14 +866,15 @@ paths:
                 "404":
                     description: Test not found or not registered
 
-    /get-all-complete-test:
+    /user/get-all-complete-test:
         get:
             summary: Get all completed tests
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Retrieve a list of completed tests for a student.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             responses:
                 "200":
                     description: Successfully retrieved completed tests
@@ -846,14 +892,15 @@ paths:
                 "500":
                     description: Internal Server Error
 
-    /get-result-test/{testId}:
+    /user/get-result-test/{testId}:
         get:
             summary: Get result for a specific test
+            security:
+                - Bearer: []
+
             tags:
                 - student
             description: Retrieve the result for a specific test for a student.
-            security:
-                - bearerAuth: [] # Assuming you are using bearer token authentication
             parameters:
                 - name: testId
                   in: path
@@ -1001,6 +1048,7 @@ components:
                             questionId:
                                 type: "string"
     securitySchemes:
-        bearerAuth:
-            type: http
-            scheme: bearer
+        Bearer:
+            type: apiKey
+            in: header
+            name: Authorization

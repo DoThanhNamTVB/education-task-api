@@ -58,15 +58,15 @@ const login = asyncHandler(async (req, res) => {
         });
 
         if (checkUser) {
-            if (User.checkPassword(password)) {
+            if (await checkUser.checkPassword(password)) {
                 let token = generateToken({
                     _id: checkUser._id,
                     username: checkUser.username,
                     password: checkUser.password,
                 });
                 res.status(200).json({
-                    token: token,
                     message: "user login successfull",
+                    token: token,
                 });
             }
         } else {
@@ -81,7 +81,7 @@ const login = asyncHandler(async (req, res) => {
 const removeUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
-        const user = await User.findById({ _id: userId });
+        const user = await User.findByIdAndDelete({ _id: userId });
         if (user) {
             user.deleteOne();
             res.status(200).json({
@@ -141,9 +141,9 @@ const addSubject = asyncHandler(async (req, res) => {
                 message: "subject code has existed",
             });
         }
-        if (!typeof subjectCode !== Number) {
+        if (typeof subjectCode !== "number") {
             return res.status(400).json({
-                message: "subjectCode need a Number",
+                message: "subjectCode need a number",
             });
         }
         const subject = await Subject.create({

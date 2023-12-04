@@ -3,10 +3,9 @@ const { Schema } = mongoose;
 
 const questionSchema = new mongoose.Schema(
     {
-        _id: {
-            type: Number,
-            required: true,
-        },
+        // _id: {
+        //     type: Number,
+        // },
         subjectId: {
             type: Schema.Types.ObjectId,
             required: true,

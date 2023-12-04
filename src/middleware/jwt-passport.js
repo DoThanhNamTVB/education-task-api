@@ -1,5 +1,5 @@
 const isAdmin = (req, res, next) => {
-    if (req.user.role !== 1) {
+    if (req.user?.role !== 1) {
         return res.status(401).json({
             message: "You are not admin",
         });
@@ -17,7 +17,7 @@ const isTeacher = (req, res, next) => {
 };
 
 const isStudent = (req, res, next) => {
-    if (req.user.role !== 1) {
+    if (req.user.role !== 3) {
         return res.status(401).json({
             message: "You are not Student",
         });

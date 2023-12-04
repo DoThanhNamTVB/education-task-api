@@ -36,7 +36,7 @@ router
     .post(authenJWT, isAdmin, addSubject)
     .delete(authenJWT, isAdmin, removeSubject)
     .get(authenJWT, isAdmin, getAllSubject);
-router.get("/all-teacher", isAdmin, getAllTeacher);
+router.get("/all-teacher", authenJWT, isAdmin, getAllTeacher);
 router.get("/all-student", authenJWT, isAdmin, getAllStudent);
 
 module.exports = router;
