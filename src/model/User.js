@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema(
     {
         username: {
             type: String,
+            unique: true,
             required: true,
         },
         password: {
@@ -14,14 +15,14 @@ const userSchema = new mongoose.Schema(
         role: {
             type: Number,
             required: true,
-            // 0 : admin, 1 : giáo viên , 2 : học sinh
-            enum: [0, 1, 2],
+            // 1 : admin, 2 : giáo viên , 3 : học sinh
+            enum: [1, 2, 3],
         },
-        image: {
-            path: String,
-            name: String,
-        },
-        dateOfBirth: Date,
+        // image: {
+        //     path: String,
+        //     name: String,
+        // },
+        // dateOfBirth: Date,
         status: {
             type: String,
             enum: ["active", "block"],
@@ -33,14 +34,14 @@ const userSchema = new mongoose.Schema(
     }
 );
 
-userSchema.pre("save", function (next) {
-    if (!this.isModified) {
+//hash password before save database
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) {
         next();
     }
-    const salt = bcrypt.genSaltSync(10);
-    this.password = bcrypt.hashSync(this.password, salt);
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
 });
-
 //check password methods
 
 userSchema.methods.checkPassword = function (password) {
