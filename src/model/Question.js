@@ -3,10 +3,9 @@ const { Schema } = mongoose;
 
 const questionSchema = new mongoose.Schema(
     {
-        _id: {
-            type: Number,
-            required: true,
-        },
+        // _id: {
+        //     type: Number,
+        // },
         subjectId: {
             type: Schema.Types.ObjectId,
             required: true,
@@ -20,13 +19,14 @@ const questionSchema = new mongoose.Schema(
         answer: [
             {
                 content: String,
-                isTrue: false,
+                isTrue: Boolean,
             },
         ],
         status: {
-            type: Boolean,
+            type: String,
             required: true,
             enum: ["active", "inactive", "draft"],
+            default: "active",
         },
     },
     {

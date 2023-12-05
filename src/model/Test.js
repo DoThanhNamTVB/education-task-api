@@ -3,7 +3,7 @@ const { Schema } = mongoose;
 
 const testSchema = new mongoose.Schema(
     {
-        name: {
+        testName: {
             type: String,
             required: true,
         },
@@ -12,18 +12,32 @@ const testSchema = new mongoose.Schema(
             required: true,
             ref: "Subject",
         },
-        userId: [
+        authTest: {
+            type: Schema.ObjectId,
+            ref: "User",
+        },
+        student: [
             {
-                type: Schema.ObjectId,
-                ref: "User",
+                studentId: { type: Schema.ObjectId, ref: "User" },
+                startTest: Date,
+                during: Number,
+                result: String,
+                status: {
+                    type: String,
+                    enum: ["Completed", "Not-complete"],
+                    default: "Not-complete",
+                },
             },
         ],
         status: {
             type: String,
-            required: true,
             enum: ["Scheduled", "Active", "Completed", "Draf", "Cancel"],
-            startTime: { type: Date },
-            endTime: { type: Date },
+        },
+        startTime: { type: Date },
+        endTime: { type: Date },
+        duringStart: {
+            //hạn thời gian làm bài : 60 - 60 phút
+            type: Number,
         },
         question: [
             {
@@ -43,7 +57,7 @@ const testSchema = new mongoose.Schema(
 //middleware set status test
 testSchema.pre("save", function (next) {
     const now = new Date();
-    if (this.startTime && this.endTime) {
+    if (this.startTime !== null && this.endTime !== null) {
         if (now < this.startTime) {
             this.status = "Scheduled";
         } else if (now > this.endTime) {
@@ -57,4 +71,18 @@ testSchema.pre("save", function (next) {
     next();
 });
 
-module.exports = mongoose.model("test", testSchema);
+//middleware convert to ObjectId
+
+testSchema.pre("save", function (next) {
+    this.authTest = new mongoose.Types.ObjectId(this.authTest);
+
+    this.question = this.question.map((item) => {
+        return {
+            questionId: new mongoose.Types.ObjectId(item.questionId),
+        };
+    });
+
+    next();
+});
+
+module.exports = mongoose.model("Test", testSchema);
