@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  # Dịch vụ Node.js
+  nodejs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    environment:
+      - PORT=3001
+      - NODE_ENV=development
+      - JWT_SECRET=dothanhnam123
+      - SESSION_SECRET=my-session-passport
+      - MONGO_CONNECTION_STRING=mongodb+srv://admin:123456789a@cluster-01.t0couj0.mongodb.net/EducationTask
+
+  # Dịch vụ MongoDB
+  mongodb:
+    image: "mongo:latest"
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_URI=mongodb+srv://admin:123456789a@cluster-01.t0couj0.mongodb.net/
+
+# run and create compose : docker-compose -p docker-education up -d
