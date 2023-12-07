@@ -10,12 +10,8 @@ services:
       - "3001:3001"
     depends_on:
       - mongodb
-    environment:
-      - PORT=3001
-      - NODE_ENV=development
-      - JWT_SECRET=dothanhnam123
-      - SESSION_SECRET=my-session-passport
-      - MONGO_CONNECTION_STRING=mongodb+srv://admin:123456789a@cluster-01.t0couj0.mongodb.net/EducationTask
+    env_file:
+      - .env
 
   # Dịch vụ MongoDB
   mongodb:
@@ -23,7 +19,8 @@ services:
     restart: always
     ports:
       - "27017:27017"
+    env_file:
+      - .env
     environment:
-      - MONGODB_URI=mongodb+srv://admin:123456789a@cluster-01.t0couj0.mongodb.net/
-
+      - MONGO_CONNECTION_STRING=${MONGO_CONNECTION_STRING}
 # run and create compose : docker-compose -p docker-education up -d
