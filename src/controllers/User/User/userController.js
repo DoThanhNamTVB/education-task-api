@@ -81,7 +81,7 @@ const getTestDetailById = asyncHandler(async (req, res) => {
             });
         } else {
             return res.status(404).json({
-                message: "Not found test in database",
+                message: "Not found test with this testId in database",
             });
         }
     } catch (error) {
