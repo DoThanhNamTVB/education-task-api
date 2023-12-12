@@ -2,46 +2,61 @@ const User = require("../../model/User");
 const asyncHandler = require("express-async-handler");
 const generateToken = require("../../utils/generateToken");
 const Subject = require("../../model/Subject");
+const bcrypt = require("bcryptjs");
 
 const register = asyncHandler(async (req, res) => {
     try {
         const { username, password, role } = req.body;
         // console.log(username, password, role);
 
+        //check invalid data
         if (!username || !password || !role) {
-            throw new Error("Please fill all username, password, role");
+            return res.status(400).json({
+                message: "Please fill all username, password, role",
+            });
+        }
+
+        //validate username
+        const regex = /^[a-zA-Z0-9]+$/;
+        const checkUsername = regex.test(username);
+        if (!checkUsername) {
+            return res.status(400).json({
+                message: "username is invalid",
+            });
         }
 
         if (+role !== 1 && +role !== 2 && +role !== 3) {
-            throw new Error("Role invalid");
-        } else {
-            // find username in database
-            const checkUser = await User.findOne({
+            return res.status(400).json({
+                message: "role is invalid",
+            });
+        }
+
+        // find username in database
+        const checkUser = await User.findOne({
+            username: username,
+        });
+
+        if (!checkUser) {
+            const userNew = await User.create({
                 username: username,
+                password: password,
+                role: +role,
             });
 
-            if (!checkUser) {
-                const userNew = await User.create({
-                    username: username,
-                    password: password,
-                    role: +role,
-                });
-
-                res.status(201).json({
-                    message: "Create account oke",
-                    user: {
-                        username: userNew.username,
-                        role:
-                            userNew.role === 1
-                                ? "admin"
-                                : userNew.role === 2
-                                ? "teacher"
-                                : "student",
-                    },
-                });
-            } else {
-                throw new Error("User has existed");
-            }
+            res.status(201).json({
+                message: "Create account oke",
+                user: {
+                    username: userNew.username,
+                    role:
+                        userNew.role === 1
+                            ? "admin"
+                            : userNew.role === 2
+                            ? "teacher"
+                            : "student",
+                },
+            });
+        } else {
+            throw new Error("User has existed");
         }
     } catch (error) {
         throw new Error(error);
@@ -57,18 +72,16 @@ const login = asyncHandler(async (req, res) => {
             username: username,
         });
 
-        if (checkUser) {
-            if (await checkUser.checkPassword(password)) {
-                let token = generateToken({
-                    _id: checkUser._id,
-                    username: checkUser.username,
-                    password: checkUser.password,
-                });
-                res.status(200).json({
-                    message: "user login successfull",
-                    token: token,
-                });
-            }
+        if (checkUser && (await checkUser.checkPassword(password))) {
+            let token = generateToken({
+                _id: checkUser._id,
+                username: checkUser.username,
+                password: checkUser.password,
+            });
+            res.status(200).json({
+                message: "user login successfull",
+                token: token,
+            });
         } else {
             res.status(401);
             throw new Error("Invalid username or password");
