@@ -176,13 +176,12 @@ const removeSubject = asyncHandler(async (req, res) => {
             subjectCode: subjectCode,
         });
         if (!result) {
-            return res.status(400).json({
+            return res.status(404).json({
                 message: "Subject not found in database",
             });
         } else {
             return res.status(200).json({
                 message: "Subject deleted",
-                subject: result,
             });
         }
     } catch (error) {
