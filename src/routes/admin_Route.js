@@ -27,10 +27,8 @@ const authenJWT = passport.authenticate("jwt", { session: false });
 router.post("/register", authenJWT, isAdmin, register);
 router.post("/login", login);
 
-router
-    .route("/:userId")
-    .delete(authenJWT, isAdmin, removeUser)
-    .put(authenJWT, isAdmin, unblockUser);
+router.route("/remove-user/:userId").put(authenJWT, isAdmin, removeUser);
+router.route("/unblock-user/:userId").put(authenJWT, isAdmin, unblockUser);
 router
     .route("/subject")
     .post(authenJWT, isAdmin, addSubject)

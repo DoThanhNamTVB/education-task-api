@@ -56,7 +56,9 @@ const register = asyncHandler(async (req, res) => {
                 },
             });
         } else {
-            throw new Error("User has existed");
+            return res.status(400).json({
+                message: "username is exits. Please use another username ",
+            });
         }
     } catch (error) {
         throw new Error(error);
@@ -72,6 +74,10 @@ const login = asyncHandler(async (req, res) => {
             username: username,
         });
 
+        if (checkUser.status === "block") {
+            return res.status(403).json({ message: "Your account is blocked" });
+        }
+
         if (checkUser && (await checkUser.checkPassword(password))) {
             let token = generateToken({
                 _id: checkUser._id,
@@ -83,10 +89,10 @@ const login = asyncHandler(async (req, res) => {
                 token: token,
             });
         } else {
-            res.status(401);
-            throw new Error("Invalid username or password");
+            res.status(400).json({ message: "Invalid username or password" });
         }
     } catch (error) {
+        res.status(500);
         throw new Error(error);
     }
 });
@@ -94,16 +100,16 @@ const login = asyncHandler(async (req, res) => {
 const removeUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
-        const user = await User.findByIdAndDelete({ _id: userId });
+        const user = await User.findByIdAndUpdate(userId, {
+            status: "block",
+        });
         if (user) {
-            user.deleteOne();
             res.status(200).json({
-                message: "User deleted",
-                user,
+                message: "This account blocked sucessfully",
             });
         } else {
             res.status(404).json({
-                message: "Not found user to delete",
+                message: "Not found user to block",
             });
         }
     } catch (error) {
@@ -116,16 +122,15 @@ const unblockUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findById({ _id: userId });
-        if (user) {
-            if (user.status === "active") {
-                user.status = "block";
-                await user.save();
-            } else if (user.status === "block") {
-                user.status = "active";
-                await user.save();
-            }
+        if (user.status === "block") {
+            user.status = "active";
+            await user.save();
             res.status(200).json({
                 message: `Account ${user.username} has ${user.status}`,
+            });
+        } else if ((user.status = "active")) {
+            res.status(400).json({
+                message: `The account is not block`,
             });
         } else {
             res.status(404).json({
