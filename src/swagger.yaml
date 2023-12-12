@@ -208,15 +208,12 @@ paths:
                         schema:
                             type: object
                             properties:
-                                subjectCode:
-                                    type: number
-                                    example: 101
                                 subjectName:
                                     type: string
                                     example: Maths
             responses:
                 "201":
-                    description: "User deleted"
+                    description: "Subject is created"
                     content:
                         application/json:
                             schema:
@@ -234,39 +231,7 @@ paths:
                     description: "Unauthorized"
                 "500":
                     description: "Server error"
-        delete:
-            tags:
-                - "admin"
-            summary: unblock user
-            security:
-                - Bearer: []
-            requestBody:
-                description: id of Subject
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                subjectId:
-                                    type: string
-            responses:
-                "200":
-                    description: "Subject deleted"
-                    content:
-                        application/json:
-                            schema:
-                                properties:
-                                    message:
-                                        type: string
-                                        example: Subject deleted
-                                    subject:
-                                        $ref: "#/components/schemas/Subject"
-                "400":
-                    description: "Bad request / data invalid"
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
+
         get:
             tags:
                 - "admin"
@@ -284,6 +249,40 @@ paths:
                                     $ref: "#/components/schemas/Subject"
                 "400":
                     description: "Bad request"
+                "401":
+                    description: "Unauthorized"
+                "500":
+                    description: "Server error"
+
+    /admin/subject/{subjectCode}:
+        delete:
+            tags:
+                - "admin"
+            summary: unblock user
+            security:
+                - Bearer: []
+            parameters:
+                - name: subjectCode
+                  in: path
+                  description: subject code of the subject
+                  required: true
+                  schema:
+                      type: string
+
+            responses:
+                "200":
+                    description: "Subject deleted"
+                    content:
+                        application/json:
+                            schema:
+                                properties:
+                                    message:
+                                        type: string
+                                        example: Subject deleted
+                                    subject:
+                                        $ref: "#/components/schemas/Subject"
+                "400":
+                    description: "Bad request / data invalid"
                 "401":
                     description: "Unauthorized"
                 "500":

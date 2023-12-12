@@ -127,25 +127,29 @@ const unblockUser = asyncHandler(async (req, res) => {
 
 const addSubject = asyncHandler(async (req, res) => {
     try {
-        const { subjectCode, subjectName } = req.body;
-        if (!subjectCode || !subjectName) {
+        const { subjectName } = req.body;
+        if (!subjectName) {
             return res.status(400).json({
-                message: "subjectCode, subjectName can null. Please fullfill",
+                message: "subjectName can null. Please fullfill",
             });
         }
-        const checkSubjectCode = await Subject.findOne({
-            subjectCode: subjectCode,
-        });
-        if (checkSubjectCode) {
-            return res.status(400).json({
-                message: "subject code has existed",
-            });
+
+        //auto generate subject code
+        function generateUniqueCode(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
         }
-        if (typeof subjectCode !== "number") {
-            return res.status(400).json({
-                message: "subjectCode need a number",
-            });
+
+        async function isCodeUnique() {
+            let subjectCode;
+
+            do {
+                subjectCode = generateUniqueCode(1000, 10000);
+            } while (await Subject.exists({ subjectCode: subjectCode }));
+            return subjectCode;
         }
+
+        const subjectCode = await isCodeUnique();
+
         const subject = await Subject.create({
             subjectCode: subjectCode,
             subjectName: subjectName,
@@ -162,13 +166,15 @@ const addSubject = asyncHandler(async (req, res) => {
 
 const removeSubject = asyncHandler(async (req, res) => {
     try {
-        const { subjectId } = req.body;
-        if (!subjectId) {
+        const { subjectCode } = req.params;
+        if (!subjectCode) {
             return res.status(400).json({
-                message: "subjectId is require field",
+                message: "subjectCode is require field",
             });
         }
-        const result = await Subject.findByIdAndDelete(subjectId);
+        const result = await Subject.findOneAndDelete({
+            subjectCode: subjectCode,
+        });
         if (!result) {
             return res.status(400).json({
                 message: "Subject not found in database",

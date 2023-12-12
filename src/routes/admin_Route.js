@@ -34,8 +34,8 @@ router
 router
     .route("/subject")
     .post(authenJWT, isAdmin, addSubject)
-    .delete(authenJWT, isAdmin, removeSubject)
     .get(authenJWT, isAdmin, getAllSubject);
+router.delete("/subject/:subjectCode", authenJWT, isAdmin, removeSubject);
 router.get("/all-teacher", authenJWT, isAdmin, getAllTeacher);
 router.get("/all-student", authenJWT, isAdmin, getAllStudent);
 
