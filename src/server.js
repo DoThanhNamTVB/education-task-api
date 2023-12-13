@@ -42,10 +42,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //middleware http logger
-app.use(morgan("dev"));
+        app.use(morgan("dev"));
 
 //Middleare cors(cross origin resoure sharing)
-app.use(cors());
+        app.use(cors());
 
 //swagger setup
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));

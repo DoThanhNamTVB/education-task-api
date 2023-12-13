@@ -6,7 +6,19 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node ./src/server.js",
-        "dev": "nodemon ./src/server.js"
+        "dev": "nodemon ./src/server.js",
+        "format": "prettier-eslint --config .prettierrc.js --eslint-config-path .eslintrc.js --write 'src/**/*.{js,json}'"
+    },
+    "lint-staged": {
+        "src/**/*.{js,json}": [
+            "prettier --write",
+            "eslint --fix"
+        ]
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
     },
     "repository": {
         "type": "git",
@@ -36,7 +48,13 @@
         "yamljs": "^0.3.0"
     },
     "devDependencies": {
+        "eslint": "^8.55.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.0.1",
+        "husky": "^8.0.3",
+        "lint-staged": "^15.2.0",
         "morgan": "^1.10.0",
-        "nodemon": "^3.0.1"
+        "nodemon": "^3.0.1",
+        "prettier": "^3.1.1"
     }
 }
