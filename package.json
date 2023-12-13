@@ -7,7 +7,8 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node ./src/server.js",
         "dev": "nodemon ./src/server.js",
-        "format": "prettier-eslint --config .prettierrc.js --eslint-config-path .eslintrc.js --write 'src/**/*.{js,json}'"
+        "format": "prettier --write '**/*.{js,json}'",
+        "fix": "eslint ."
     },
     "lint-staged": {
         "src/**/*.{js,json}": [

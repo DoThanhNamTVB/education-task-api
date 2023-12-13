@@ -1,7 +1,7 @@
-const User = require("../../model/User");
-const asyncHandler = require("express-async-handler");
-const generateToken = require("../../utils/generateToken");
-const Subject = require("../../model/Subject");
+const User = require('../../model/User');
+const asyncHandler = require('express-async-handler');
+const generateToken = require('../../utils/generateToken');
+const Subject = require('../../model/Subject');
 
 const register = asyncHandler(async (req, res) => {
     try {
@@ -9,11 +9,11 @@ const register = asyncHandler(async (req, res) => {
         // console.log(username, password, role);
 
         if (!username || !password || !role) {
-            throw new Error("Please fill all username, password, role");
+            throw new Error('Please fill all username, password, role');
         }
 
         if (+role !== 1 && +role !== 2 && +role !== 3) {
-            throw new Error("Role invalid");
+            throw new Error('Role invalid');
         } else {
             // find username in database
             const checkUser = await User.findOne({
@@ -28,19 +28,19 @@ const register = asyncHandler(async (req, res) => {
                 });
 
                 res.status(201).json({
-                    message: "Create account oke",
+                    message: 'Create account oke',
                     user: {
                         username: userNew.username,
                         role:
                             userNew.role === 1
-                                ? "admin"
+                                ? 'admin'
                                 : userNew.role === 2
-                                ? "teacher"
-                                : "student",
+                                  ? 'teacher'
+                                  : 'student',
                     },
                 });
             } else {
-                throw new Error("User has existed");
+                throw new Error('User has existed');
             }
         }
     } catch (error) {
@@ -65,13 +65,13 @@ const login = asyncHandler(async (req, res) => {
                     password: checkUser.password,
                 });
                 res.status(200).json({
-                    message: "user login successfull",
+                    message: 'user login successfull',
                     token: token,
                 });
             }
         } else {
             res.status(401);
-            throw new Error("Invalid username or password");
+            throw new Error('Invalid username or password');
         }
     } catch (error) {
         throw new Error(error);
@@ -85,12 +85,12 @@ const removeUser = asyncHandler(async (req, res) => {
         if (user) {
             user.deleteOne();
             res.status(200).json({
-                message: "User deleted",
+                message: 'User deleted',
                 user,
             });
         } else {
             res.status(404).json({
-                message: "Not found user to delete",
+                message: 'Not found user to delete',
             });
         }
     } catch (error) {
@@ -104,11 +104,11 @@ const unblockUser = asyncHandler(async (req, res) => {
         const { userId } = req.params;
         const user = await User.findById({ _id: userId });
         if (user) {
-            if (user.status === "active") {
-                user.status = "block";
+            if (user.status === 'active') {
+                user.status = 'block';
                 await user.save();
-            } else if (user.status === "block") {
-                user.status = "active";
+            } else if (user.status === 'block') {
+                user.status = 'active';
                 await user.save();
             }
             res.status(200).json({
@@ -130,7 +130,7 @@ const addSubject = asyncHandler(async (req, res) => {
         const { subjectCode, subjectName } = req.body;
         if (!subjectCode || !subjectName) {
             return res.status(400).json({
-                message: "subjectCode, subjectName can null. Please fullfill",
+                message: 'subjectCode, subjectName can null. Please fullfill',
             });
         }
         const checkSubjectCode = await Subject.findOne({
@@ -138,12 +138,12 @@ const addSubject = asyncHandler(async (req, res) => {
         });
         if (checkSubjectCode) {
             return res.status(400).json({
-                message: "subject code has existed",
+                message: 'subject code has existed',
             });
         }
-        if (typeof subjectCode !== "number") {
+        if (typeof subjectCode !== 'number') {
             return res.status(400).json({
-                message: "subjectCode need a number",
+                message: 'subjectCode need a number',
             });
         }
         const subject = await Subject.create({
@@ -151,7 +151,7 @@ const addSubject = asyncHandler(async (req, res) => {
             subjectName: subjectName,
         });
         res.status(201).json({
-            message: "Subject is created",
+            message: 'Subject is created',
             subject,
         });
     } catch (error) {
@@ -165,17 +165,17 @@ const removeSubject = asyncHandler(async (req, res) => {
         const { subjectId } = req.body;
         if (!subjectId) {
             return res.status(400).json({
-                message: "subjectId is require field",
+                message: 'subjectId is require field',
             });
         }
         const result = await Subject.findByIdAndDelete(subjectId);
         if (!result) {
             return res.status(400).json({
-                message: "Subject not found in database",
+                message: 'Subject not found in database',
             });
         } else {
             return res.status(200).json({
-                message: "Subject deleted",
+                message: 'Subject deleted',
                 subject: result,
             });
         }

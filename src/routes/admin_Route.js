@@ -1,6 +1,6 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { isAdmin } = require("../middleware/jwt-passport");
+const { isAdmin } = require('../middleware/jwt-passport');
 
 const {
     register,
@@ -12,9 +12,9 @@ const {
     getAllTeacher,
     getAllStudent,
     login,
-} = require("../controllers/Admin/adminController");
-const passport = require("passport");
-const authenJWT = passport.authenticate("jwt", { session: false });
+} = require('../controllers/Admin/adminController');
+const passport = require('passport');
+const authenJWT = passport.authenticate('jwt', { session: false });
 
 // router.post("/register", passport.authenticate("local-signup"), (req, res) => {
 //     const token = generateToken(req.user);
@@ -24,19 +24,19 @@ const authenJWT = passport.authenticate("jwt", { session: false });
 //         token: token,
 //     });
 // });
-router.post("/register", authenJWT, isAdmin, register);
-router.post("/login", login);
+router.post('/register', authenJWT, isAdmin, register);
+router.post('/login', login);
 
 router
-    .route("/:userId")
+    .route('/:userId')
     .delete(authenJWT, isAdmin, removeUser)
     .put(authenJWT, isAdmin, unblockUser);
 router
-    .route("/subject")
+    .route('/subject')
     .post(authenJWT, isAdmin, addSubject)
     .delete(authenJWT, isAdmin, removeSubject)
     .get(authenJWT, isAdmin, getAllSubject);
-router.get("/all-teacher", authenJWT, isAdmin, getAllTeacher);
-router.get("/all-student", authenJWT, isAdmin, getAllStudent);
+router.get('/all-teacher', authenJWT, isAdmin, getAllTeacher);
+router.get('/all-student', authenJWT, isAdmin, getAllStudent);
 
 module.exports = router;
