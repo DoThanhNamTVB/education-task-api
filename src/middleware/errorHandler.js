@@ -7,9 +7,9 @@ const notFound = (req, res, next) => {
 const errorHandler = (err, req, res, next) => {
     let statusCode = res.statusCode < 300 ? 500 : res.statusCode;
     let message = err.message;
-    if (err.name === "CastError") {
+    if (err.name === 'CastError') {
         statusCode = 404;
-        message = "Resource not found";
+        message = 'Resource not found';
     }
     res.status(statusCode || 500).json({
         message: message,

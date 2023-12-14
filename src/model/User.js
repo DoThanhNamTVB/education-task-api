@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcryptjs");
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
     {
@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema(
         // dateOfBirth: Date,
         status: {
             type: String,
-            enum: ["active", "block"],
-            default: "active",
+            enum: ['active', 'block'],
+            default: 'active',
         },
     },
     {
@@ -35,8 +35,8 @@ const userSchema = new mongoose.Schema(
 );
 
 //hash password before save database
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) {
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) {
         next();
     }
     const salt = await bcrypt.genSalt(10);
@@ -48,4 +48,4 @@ userSchema.methods.checkPassword = function (password) {
     return bcrypt.compareSync(password, this.password);
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
