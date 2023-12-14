@@ -7,9 +7,9 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node ./src/server.js",
         "dev": "nodemon ./src/server.js",
+        "prepare": "husky install",
         "format": "prettier --write '**/*.{js,json}'",
-        "fix": "eslint .",
-        "prepare": "husky install"
+        "fix": "eslint --fix ."
     },
     "lint-staged": {
         "**/*.{js,json}": "prettier --write",
