@@ -1,8 +1,8 @@
-const User = require("../../model/User");
-const asyncHandler = require("express-async-handler");
-const generateToken = require("../../utils/generateToken");
-const Subject = require("../../model/Subject");
-const bcrypt = require("bcryptjs");
+const User = require('../../model/User');
+const asyncHandler = require('express-async-handler');
+const generateToken = require('../../utils/generateToken');
+const Subject = require('../../model/Subject');
+const bcrypt = require('bcryptjs');
 
 const register = asyncHandler(async (req, res) => {
     try {
@@ -12,7 +12,7 @@ const register = asyncHandler(async (req, res) => {
         //check invalid data
         if (!username || !password || !role) {
             return res.status(400).json({
-                message: "Please fill all username, password, role",
+                message: 'Please fill all username, password, role',
             });
         }
 
@@ -21,13 +21,13 @@ const register = asyncHandler(async (req, res) => {
         const checkUsername = regex.test(username);
         if (!checkUsername) {
             return res.status(400).json({
-                message: "username is invalid",
+                message: 'username is invalid',
             });
         }
 
         if (+role !== 1 && +role !== 2 && +role !== 3) {
             return res.status(400).json({
-                message: "role is invalid",
+                message: 'role is invalid',
             });
         }
 
@@ -44,20 +44,20 @@ const register = asyncHandler(async (req, res) => {
             });
 
             res.status(201).json({
-                message: "Create account oke",
+                message: 'Create account oke',
                 user: {
                     username: userNew.username,
                     role:
                         userNew.role === 1
-                            ? "admin"
+                            ? 'admin'
                             : userNew.role === 2
-                            ? "teacher"
-                            : "student",
+                            ? 'teacher'
+                            : 'student',
                 },
             });
         } else {
             return res.status(400).json({
-                message: "username is exits. Please use another username ",
+                message: 'username is exits. Please use another username ',
             });
         }
     } catch (error) {
@@ -74,8 +74,8 @@ const login = asyncHandler(async (req, res) => {
             username: username,
         });
 
-        if (checkUser.status === "block") {
-            return res.status(403).json({ message: "Your account is blocked" });
+        if (checkUser && checkUser?.status === 'block') {
+            return res.status(403).json({ message: 'Your account is blocked' });
         }
 
         if (checkUser && (await checkUser.checkPassword(password))) {
@@ -85,11 +85,11 @@ const login = asyncHandler(async (req, res) => {
                 password: checkUser.password,
             });
             res.status(200).json({
-                message: "user login successfull",
+                message: 'user login successfull',
                 token: token,
             });
         } else {
-            res.status(400).json({ message: "Invalid username or password" });
+            res.status(400).json({ message: 'Invalid username or password' });
         }
     } catch (error) {
         res.status(500);
@@ -101,15 +101,15 @@ const removeUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findByIdAndUpdate(userId, {
-            status: "block",
+            status: 'block',
         });
         if (user) {
             res.status(200).json({
-                message: "This account blocked sucessfully",
+                message: 'This account blocked sucessfully',
             });
         } else {
             res.status(404).json({
-                message: "Not found user to block",
+                message: 'Not found user to block',
             });
         }
     } catch (error) {
@@ -122,13 +122,13 @@ const unblockUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findById({ _id: userId });
-        if (user.status === "block") {
-            user.status = "active";
+        if (user.status === 'block') {
+            user.status = 'active';
             await user.save();
             res.status(200).json({
                 message: `Account ${user.username} has ${user.status}`,
             });
-        } else if ((user.status = "active")) {
+        } else if ((user.status = 'active')) {
             res.status(400).json({
                 message: `The account is not block`,
             });
@@ -148,7 +148,7 @@ const addSubject = asyncHandler(async (req, res) => {
         const { subjectName } = req.body;
         if (!subjectName) {
             return res.status(400).json({
-                message: "subjectName can null. Please fullfill",
+                message: 'subjectName can null. Please fullfill',
             });
         }
 
@@ -173,7 +173,7 @@ const addSubject = asyncHandler(async (req, res) => {
             subjectName: subjectName,
         });
         res.status(201).json({
-            message: "Subject is created",
+            message: 'Subject is created',
             subject,
         });
     } catch (error) {
@@ -187,7 +187,7 @@ const removeSubject = asyncHandler(async (req, res) => {
         const { subjectCode } = req.params;
         if (!subjectCode) {
             return res.status(400).json({
-                message: "subjectCode is require field",
+                message: 'subjectCode is require field',
             });
         }
         const result = await Subject.findOneAndDelete({
@@ -195,11 +195,11 @@ const removeSubject = asyncHandler(async (req, res) => {
         });
         if (!result) {
             return res.status(404).json({
-                message: "Subject not found in database",
+                message: 'Subject not found in database',
             });
         } else {
             return res.status(200).json({
-                message: "Subject deleted",
+                message: 'Subject deleted',
             });
         }
     } catch (error) {
