@@ -1,8 +1,8 @@
-const Question = require("../../../model/Question");
-const Subject = require("../../../model/Subject");
-const Test = require("../../../model/Test");
-const asyncHandler = require("express-async-handler");
-const mongoose = require("mongoose");
+const Question = require('../../../model/Question');
+const Subject = require('../../../model/Subject');
+const Test = require('../../../model/Test');
+const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 
 const addQuestion = asyncHandler(async (req, res) => {
     try {
@@ -10,7 +10,7 @@ const addQuestion = asyncHandler(async (req, res) => {
         const findSubject = await Subject.findById(subjectId);
         if (!findSubject) {
             return res.status(404).json({
-                message: "Not found subject with this subjectid",
+                message: 'Not found subject with this subjectid',
             });
         }
         const { questionName, answer, status } = req.body;
@@ -21,9 +21,9 @@ const addQuestion = asyncHandler(async (req, res) => {
         if (answer?.length > 0) {
             const check = answer.every((item) => {
                 return (
-                    typeof item.isTrue === "boolean" &&
+                    typeof item.isTrue === 'boolean' &&
                     item.content.trim() !== null &&
-                    item.content.trim() !== "" &&
+                    item.content.trim() !== '' &&
                     item.isTrue !== null
                 );
             });
@@ -33,14 +33,14 @@ const addQuestion = asyncHandler(async (req, res) => {
         //check questionName , answer
         if (!questionName || checkAnnswer === false) {
             return res.status(400).json({
-                message: "require correct format",
+                message: 'require correct format',
             });
         }
         //check status
-        const dataStatus = ["active", "inactive", "draft"];
+        const dataStatus = ['active', 'inactive', 'draft'];
         if (status && !dataStatus.includes(status)) {
             return res.status(400).json({
-                message: "status is invalid",
+                message: 'status is invalid',
             });
         }
 
@@ -52,7 +52,7 @@ const addQuestion = asyncHandler(async (req, res) => {
         });
 
         return res.status(201).json({
-            message: "add question is oke",
+            message: 'add question is oke',
             question: question,
         });
     } catch (error) {
@@ -67,10 +67,10 @@ const searchQuestion = asyncHandler(async (req, res) => {
 
         //search by question name
         const search = await Question.find({
-            questionName: { $regex: questionName.trim(), $options: "i" },
+            questionName: { $regex: questionName.trim(), $options: 'i' },
         }).populate({
-            path: "subjectId",
-            model: "Subject",
+            path: 'subjectId',
+            model: 'Subject',
         });
 
         if (search) {
@@ -79,7 +79,7 @@ const searchQuestion = asyncHandler(async (req, res) => {
             });
         } else {
             return res.status(404).json({
-                message: "Not found question",
+                message: 'Not found question',
             });
         }
     } catch (error) {
@@ -95,14 +95,14 @@ const updateQuestion = asyncHandler(async (req, res) => {
         //checkquestiion id
         if (!questionId) {
             return res.status(404).json({
-                message: "question id is null",
+                message: 'question id is null',
             });
         }
         //check question
         const checkQuestion = await Question.findById(questionId);
         if (!checkQuestion) {
             return res.status(404).json({
-                message: "Not found question in database",
+                message: 'Not found question in database',
             });
         }
 
@@ -112,7 +112,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
 
             if (!findSubject) {
                 return res.status(404).json({
-                    message: "Not found subject",
+                    message: 'Not found subject',
                 });
             } else {
                 checkQuestion.subjectId = mongoose.Types.ObjectId(subjectId);
@@ -126,9 +126,9 @@ const updateQuestion = asyncHandler(async (req, res) => {
             if (answer?.length > 0) {
                 const check = answer.every((item) => {
                     return (
-                        typeof item.isTrue === "boolean" &&
+                        typeof item.isTrue === 'boolean' &&
                         item.content.trim() !== null &&
-                        item.content.trim() !== "" &&
+                        item.content.trim() !== '' &&
                         item.isTrue !== null
                     );
                 });
@@ -138,7 +138,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
             //return if false
             if (checkAnnswer === false) {
                 return res.status(400).json({
-                    message: "data answer is not correct format",
+                    message: 'data answer is not correct format',
                 });
             }
 
@@ -154,10 +154,10 @@ const updateQuestion = asyncHandler(async (req, res) => {
 
         //check status
         if (status) {
-            const dataStatus = ["active", "inactive", "draft"];
+            const dataStatus = ['active', 'inactive', 'draft'];
             if (!dataStatus.includes(status)) {
                 return res.status(400).json({
-                    message: "status is invalid",
+                    message: 'status is invalid',
                 });
             } else {
                 checkQuestion.status = status;
@@ -167,7 +167,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
         //updatequestion
         await checkQuestion.save();
         res.status(200).json({
-            message: "update question oke",
+            message: 'update question oke',
             question: checkQuestion,
         });
     } catch (error) {
@@ -184,17 +184,17 @@ const deleteQuestion = asyncHandler(async (req, res) => {
             const response = await Question.findByIdAndDelete(questionId);
             if (response) {
                 return res.status(200).json({
-                    message: "delete question oke",
+                    message: 'delete question oke',
                     questionDeleted: response,
                 });
             } else {
                 return res.status(404).json({
-                    message: "No this question in database",
+                    message: 'No this question in database',
                 });
             }
         } else {
             return res.status(400).json({
-                message: "question id is null",
+                message: 'question id is null',
             });
         }
     } catch (error) {
@@ -210,11 +210,11 @@ const changeStatusQuestion = asyncHandler(async (req, res) => {
         //check required
         if (!questionId || !status) {
             return res.status(400).json({
-                message: "questionId,status is require",
+                message: 'questionId,status is require',
             });
         }
         //check status
-        const dataStatus = ["active", "inactive", "draft"];
+        const dataStatus = ['active', 'inactive', 'draft'];
         if (status && !dataStatus.includes(status)) {
             return res.status(400).json({
                 message:
@@ -228,12 +228,12 @@ const changeStatusQuestion = asyncHandler(async (req, res) => {
             response.status = status;
             await response.save();
             return res.status(200).json({
-                message: "update status is oke",
+                message: 'update status is oke',
                 status: response.status,
             });
         } else {
             return res.status(400).json({
-                message: "Not found question with this id",
+                message: 'Not found question with this id',
             });
         }
     } catch (error) {
@@ -257,20 +257,20 @@ const createTest = asyncHandler(async (req, res) => {
         if (!testName || !subjectId || !user?.id || !duringStart || !question) {
             return res.status(400).json({
                 message:
-                    "Data is require : testName, subjectId, auth, duringStart, question ",
+                    'Data is require : testName, subjectId, auth, duringStart, question ',
             });
         } else {
             //check subjectid in database
             const findSubject = await Subject.findById(subjectId);
             if (!findSubject) {
                 return res.status(404).json({
-                    message: "Not found subject with this subjectId",
+                    message: 'Not found subject with this subjectId',
                 });
             }
 
             //check question
             //get list id question indatabase
-            const getQuestionId = await Question.find().select("_id");
+            const getQuestionId = await Question.find().select('_id');
             const dataQuestion = [];
             getQuestionId?.forEach((item) => {
                 dataQuestion.push(item._id.toString());
@@ -304,12 +304,11 @@ const createTest = asyncHandler(async (req, res) => {
             });
 
             return res.status(201).json({
-                message: "create test oke",
+                message: 'create test oke',
                 test: response,
             });
         }
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
