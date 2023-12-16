@@ -41,10 +41,11 @@ const register = asyncHandler(async (req, res) => {
                 username: username,
                 password: password,
                 role: +role,
+                status: block,
             });
 
             res.status(201).json({
-                message: 'Create account oke',
+                message: 'Create account oke, waiting admin approve',
                 user: {
                     username: userNew.username,
                     role:
@@ -56,7 +57,7 @@ const register = asyncHandler(async (req, res) => {
                 },
             });
         } else {
-            return res.status(400).json({
+            return res.status(500).json({
                 message: 'username is exits. Please use another username ',
             });
         }
@@ -68,6 +69,8 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
     try {
         const { username, password } = req.body;
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
 
         // find username in database
         const checkUser = await User.findOne({

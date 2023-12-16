@@ -54,8 +54,18 @@ describe('POST /api/admin/login', () => {
                 username: 'adminabc',
                 password: '123456789a',
             });
-            expect(res.statusCode).toBe();
-            expect(res.body.message).toBe('user login successfull');
+            expect(res.statusCode).toBe(400);
+            expect(res.body.message).toBe('Invalid username or password');
+        };
+
+    it('should not login account blocked'),
+        async () => {
+            const res = await request(app).post('/api/admin/login').send({
+                username: 'NguyenVanNam',
+                password: '123456789a',
+            });
+            expect(res.statusCode).toBe(403);
+            expect(res.body.message).toBe('Your account is blocked');
         };
 });
 
