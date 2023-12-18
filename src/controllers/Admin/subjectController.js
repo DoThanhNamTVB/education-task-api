@@ -1,25 +1,17 @@
 const asyncHandler = require('express-async-handler');
 const Subject = require('../../model/Subject');
+const { v4: uuidv4 } = require('uuid');
 
 const addSubject = asyncHandler(async (req, res) => {
     try {
-        const { subjectName } = req.body;
-        if (!subjectName) {
-            return res.status(400).json({
-                message: 'subjectName can null. Please full fill',
-            });
-        }
+        const { subjectName } = req.params;
 
         //auto generate subject code
-        function generateUniqueCode(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
         async function isCodeUnique() {
             let subjectCode;
 
             do {
-                subjectCode = generateUniqueCode(1000, 10000);
+                subjectCode = uuidv4();
             } while (await Subject.exists({ subjectCode: subjectCode }));
             return subjectCode;
         }
@@ -42,11 +34,7 @@ const addSubject = asyncHandler(async (req, res) => {
 const removeSubject = asyncHandler(async (req, res) => {
     try {
         const { subjectCode } = req.params;
-        if (!subjectCode) {
-            return res.status(400).json({
-                message: 'subjectCode is require field',
-            });
-        }
+
         const result = await Subject.findOneAndDelete({
             subjectCode: subjectCode,
         });
@@ -68,7 +56,10 @@ const getAllSubject = asyncHandler(async (req, res) => {
     try {
         const subjectAll = await Subject.find();
 
-        res.status(200).json(subjectAll?.length > 0 ? subjectAll : null);
+        res.status(200).json({
+            message: 'Get all list subject successful',
+            subjects: subjectAll?.length > 0 ? subjectAll : null,
+        });
     } catch (error) {
         throw new Error(error);
     }

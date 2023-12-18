@@ -27,10 +27,8 @@ router.get('/all-teacher', authenJWT, isAdmin, getAllTeacher);
 router.get('/all-student', authenJWT, isAdmin, getAllStudent);
 
 //work with subject
-router
-    .route('/subject')
-    .post(authenJWT, isAdmin, addSubject)
-    .get(authenJWT, isAdmin, getAllSubject);
+router.post('/subject/:subjectName', authenJWT, isAdmin, addSubject);
+router.get('/subject', authenJWT, isAdmin, getAllSubject);
 router.delete('/subject/:subjectCode', authenJWT, isAdmin, removeSubject);
 
 module.exports = router;

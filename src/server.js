@@ -57,8 +57,8 @@ initRoutes(app);
 app.use(notFound);
 app.use(errorHandler);
 //run server
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log('Server running with port ', port);
 });
 
-module.exports = app;
+module.exports = { server, app };

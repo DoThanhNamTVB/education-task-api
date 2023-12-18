@@ -1,15 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const questionSchema = new mongoose.Schema(
     {
-        // _id: {
-        //     type: Number,
-        // },
         subjectId: {
             type: Schema.Types.ObjectId,
             required: true,
-            ref: "Subject",
+            ref: 'Subject',
         },
         questionName: {
             type: String,
@@ -25,8 +22,8 @@ const questionSchema = new mongoose.Schema(
         status: {
             type: String,
             required: true,
-            enum: ["active", "inactive", "draft"],
-            default: "active",
+            enum: ['active', 'inactive', 'draft'],
+            default: 'active',
         },
     },
     {
@@ -34,4 +31,4 @@ const questionSchema = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("question", questionSchema);
+module.exports = mongoose.model('question', questionSchema);

@@ -1,14 +1,13 @@
 const User = require('../../model/User');
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../../utils/generateToken');
-const bcrypt = require('bcryptjs');
 
 const register = asyncHandler(async (req, res) => {
     try {
         const { username, password, role } = req.body;
 
         //check invalid data
-        if (!username || !password || !role) {
+        if (!username || !password || !+role) {
             return res.status(400).json({
                 message: 'Please fill all username, password, role',
             });
@@ -18,8 +17,8 @@ const register = asyncHandler(async (req, res) => {
         const regex = /^[a-zA-Z0-9]+$/;
         const checkUsername = regex.test(username);
         if (!checkUsername) {
-            return res.status(404).json({
-                message: 'Not found account',
+            return res.status(400).json({
+                message: 'Username is invalid',
             });
         }
 
@@ -39,7 +38,7 @@ const register = asyncHandler(async (req, res) => {
                 username: username,
                 password: password,
                 role: +role,
-                status: block,
+                status: 'block',
             });
 
             res.status(201).json({
@@ -56,7 +55,7 @@ const register = asyncHandler(async (req, res) => {
             });
         } else {
             return res.status(500).json({
-                message: 'username is exits. Please use another username ',
+                message: 'username is exits. Please use another username',
             });
         }
     } catch (error) {
@@ -67,8 +66,6 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
     try {
         const { username, password } = req.body;
-        const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(password, salt);
 
         // find username in database
         const checkUser = await User.findOne({
@@ -123,13 +120,13 @@ const unblockUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findById({ _id: userId });
-        if (user.status === 'block') {
+        if (user && user.status === 'block') {
             user.status = 'active';
             await user.save();
             res.status(200).json({
-                message: `Account ${user.username} has ${user.status}`,
+                message: `Account has ${user.status}`,
             });
-        } else if ((user.status = 'active')) {
+        } else if (user && (user.status = 'active')) {
             res.status(500).json({
                 message: `The account is not block`,
             });
@@ -147,7 +144,10 @@ const getAllTeacher = asyncHandler(async (req, res) => {
     try {
         const teacherAll = await User.find({ role: 2 });
 
-        res.status(200).json(teacherAll?.length > 0 ? teacherAll : null);
+        res.status(200).json({
+            message: 'Get list teachers successfull',
+            teachers: teacherAll?.length > 0 ? teacherAll : null,
+        });
     } catch (error) {
         throw new Error(error);
     }
@@ -157,7 +157,10 @@ const getAllStudent = asyncHandler(async (req, res) => {
     try {
         const studentAll = await User.find({ role: 3 });
 
-        res.status(200).json(studentAll?.length > 0 ? studentAll : null);
+        res.status(200).json({
+            message: 'Get list students successfull',
+            students: studentAll?.length > 0 ? studentAll : null,
+        });
     } catch (error) {
         throw new Error(error);
     }
