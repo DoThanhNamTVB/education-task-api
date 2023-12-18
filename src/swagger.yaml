@@ -361,7 +361,7 @@ paths:
             description: Retrieve details of a test by its ID.
             parameters:
                 - name: testId
-                  in: query
+                  in: path
                   description: ID of the test
                   required: true
                   schema:

@@ -1,3 +1,4 @@
+// npx jest tests/subject.test.js
 const mongoose = require('mongoose');
 const request = require('supertest');
 
