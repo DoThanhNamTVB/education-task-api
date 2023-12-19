@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const subjectSchema = new mongoose.Schema(
     {
         subjectCode: {
-            type: Number,
+            type: String,
             unique: true,
             required: true,
         },
@@ -17,4 +17,4 @@ const subjectSchema = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("Subject", subjectSchema);
+module.exports = mongoose.model('Subject', subjectSchema);

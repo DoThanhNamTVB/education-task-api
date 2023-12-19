@@ -1,10 +1,10 @@
-openapi: "3.0.2"
+openapi: '3.0.2'
 info:
     title: My API - Education task api
     description: _Github repository [Education-task](https://github.com/DoThanhNamTVB/education-task-api)
     contact:
         email: thanhnamtb@gmail.com
-    version: "1.0.0"
+    version: '1.0.0'
 servers:
     - url: http://localhost:3001/api
 tags:
@@ -21,7 +21,10 @@ paths:
     /admin/register:
         post:
             tags:
-                - "admin"
+                - 'admin'
+                - 'user'
+                - 'teacher'
+                - 'student'
             summary: user Register
             security:
                 - Bearer: []
@@ -42,59 +45,23 @@ paths:
                                     enum: [1, 2, 3]
                                     example: 2
             responses:
-                "200":
+                '200':
                     description: Login successful
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/User"
-                "401":
-                    description: "Unauthorized"
-
-    # /admin/create-account:
-    #     post:
-    #         tags:
-    #             - "admin"
-    #         summary: admin create account
-    # security:
-    #   - Bearer: []
-
-    #         requestBody:
-    #             content:
-    #                 application/json:
-    #                     schema:
-    #                         type: object
-    #                         properties:
-    #                             username:
-    #                                 type: string
-    #                                 example: Nam Do
-    #                             password:
-    #                                 type: string
-    #                                 example: 123456789a
-    #                             role:
-    #                                 type: number
-    #                                 enum: [1, 2, 3]
-    #                                 example: 1
-    #         responses:
-    #             "201":
-    #                 description: create account successful
-    #                 content:
-    #                     application/json:
-    #                         schema:
-    #                             $ref: "#/components/schemas/User"
-    #             "400":
-    #                 description: Bad Request
-    #             "401":
-    #                 description: Unauthorized
+                                $ref: '#/components/schemas/User'
+                '401':
+                    description: 'Unauthorized'
 
     /admin/login:
         post:
             tags:
-                - "admin"
-                - "user"
-                - "teacher"
-                - "student"
-            summary: "User login"
+                - 'admin'
+                - 'user'
+                - 'teacher'
+                - 'student'
+            summary: 'User login'
             security:
                 - Bearer: []
             requestBody:
@@ -105,13 +72,13 @@ paths:
                             properties:
                                 username:
                                     type: string
-                                    example: "DoThanhNam"
+                                    example: 'DoThanhNam'
                                 password:
                                     type: string
-                                    example: "123456789a"
+                                    example: '123456789a'
             responses:
-                "201":
-                    description: "Login successful"
+                '201':
+                    description: 'Login successful'
                     content:
                         application/json:
                             schema:
@@ -121,18 +88,18 @@ paths:
                                         type: string
                                     user:
                                         type: object
-                                        $ref: "#/components/schemas/User"
-                "400":
-                    description: "Bad request"
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
+                                        $ref: '#/components/schemas/User'
+                '400':
+                    description: 'Bad request'
+                '401':
+                    description: 'Unauthorized'
+                '500':
+                    description: 'Server error'
 
-    /admin/{userId}:
-        delete:
+    /admin/remove-user/{userId}:
+        put:
             tags:
-                - "admin"
+                - 'admin'
             summary: remove user
             security:
                 - Bearer: []
@@ -143,8 +110,8 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
-                    description: "User deleted"
+                '200':
+                    description: 'User deleted'
                     content:
                         application/json:
                             schema:
@@ -154,18 +121,20 @@ paths:
                                         type: string
                                     user:
                                         type: object
-                                        $ref: "#/components/schemas/User"
-                "400":
-                    description: "Bad request"
-                "401":
-                    description: "Unauthorized"
-                "404":
-                    description: "Not found user to delete"
-                "500":
-                    description: "Server error"
+                                        $ref: '#/components/schemas/User'
+                '400':
+                    description: 'Bad request'
+                '401':
+                    description: 'Unauthorized'
+                '404':
+                    description: 'Not found user to delete'
+                '500':
+                    description: 'Server error'
+
+    /admin/unblock-user/{userId}:
         put:
             tags:
-                - "admin"
+                - 'admin'
             summary: unblock user
             security:
                 - Bearer: []
@@ -176,8 +145,8 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
-                    description: "User deleted"
+                '200':
+                    description: 'User deleted'
                     content:
                         application/json:
                             schema:
@@ -185,38 +154,31 @@ paths:
                                 properties:
                                     message:
                                         type: string
-                "400":
-                    description: "Bad request"
-                "401":
-                    description: "Unauthorized"
-                "404":
-                    description: "Not found user"
-                "500":
-                    description: "Server error"
+                '400':
+                    description: 'Bad request'
+                '401':
+                    description: 'Unauthorized'
+                '404':
+                    description: 'Not found user'
+                '500':
+                    description: 'Server error'
 
-    /admin/subject:
+    /admin/subject/{subjectName}:
         post:
             tags:
-                - "admin"
+                - 'admin'
             summary: remove user
             security:
                 - Bearer: []
-            requestBody:
-                description: information about subject
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                subjectCode:
-                                    type: number
-                                    example: 101
-                                subjectName:
-                                    type: string
-                                    example: Maths
+            parameters:
+                - name: subjectName
+                  in: path
+                  required: true
+                  schema:
+                      type: string
             responses:
-                "201":
-                    description: "User deleted"
+                '201':
+                    description: 'Subject is created'
                     content:
                         application/json:
                             schema:
@@ -227,31 +189,55 @@ paths:
                                         example: Subject is created
                                     subject:
                                         type: object
-                                        $ref: "#/components/schemas/Subject"
-                "400":
-                    description: "Bad request / required data"
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
+                                        $ref: '#/components/schemas/Subject'
+                '400':
+                    description: 'Bad request / required data'
+                '401':
+                    description: 'Unauthorized'
+                '500':
+                    description: 'Server error'
+
+    /admin/subject:
+        get:
+            tags:
+                - 'admin'
+            summary: get all subject
+            security:
+                - Bearer: []
+            responses:
+                '200':
+                    description: 'get oke'
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Subject'
+                '400':
+                    description: 'Bad request'
+                '401':
+                    description: 'Unauthorized'
+                '500':
+                    description: 'Server error'
+
+    /admin/subject/{subjectCode}:
         delete:
             tags:
-                - "admin"
+                - 'admin'
             summary: unblock user
             security:
                 - Bearer: []
-            requestBody:
-                description: id of Subject
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                subjectId:
-                                    type: string
+            parameters:
+                - name: subjectCode
+                  in: path
+                  description: subject code of the subject
+                  required: true
+                  schema:
+                      type: string
+
             responses:
-                "200":
-                    description: "Subject deleted"
+                '200':
+                    description: 'Subject deleted'
                     content:
                         application/json:
                             schema:
@@ -260,34 +246,13 @@ paths:
                                         type: string
                                         example: Subject deleted
                                     subject:
-                                        $ref: "#/components/schemas/Subject"
-                "400":
-                    description: "Bad request / data invalid"
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
-        get:
-            tags:
-                - "admin"
-            summary: get all subject
-            security:
-                - Bearer: []
-            responses:
-                "200":
-                    description: "get oke"
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    $ref: "#/components/schemas/Subject"
-                "400":
-                    description: "Bad request"
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
+                                        $ref: '#/components/schemas/Subject'
+                '400':
+                    description: 'Bad request / data invalid'
+                '401':
+                    description: 'Unauthorized'
+                '500':
+                    description: 'Server error'
 
     /admin/all-teacher:
         get:
@@ -298,15 +263,15 @@ paths:
                 - Bearer: []
             description: Retrieve a list of all teachers.
             responses:
-                "200":
+                '200':
                     description: A list of teachers
                     content:
                         application/json:
                             schema:
                                 type: array
                                 items:
-                                    $ref: "#/components/schemas/User"
-                "401":
+                                    $ref: '#/components/schemas/User'
+                '401':
                     description: Unauthorized
 
     /admin/all-student:
@@ -319,15 +284,15 @@ paths:
                 - admin
             description: Retrieve a list of all students.
             responses:
-                "200":
+                '200':
                     description: A list of students
                     content:
                         application/json:
                             schema:
                                 type: array
                                 items:
-                                    $ref: "#/components/schemas/User" # Assuming User schema definition
-                "401":
+                                    $ref: '#/components/schemas/User' # Assuming User schema definition
+                '401':
                     description: Unauthorized
 
     #user api
@@ -342,7 +307,7 @@ paths:
                 - user
             description: Retrieve details of the authenticated user.
             responses:
-                "200":
+                '200':
                     description: User details retrieved successfully
                     content:
                         application/json:
@@ -352,11 +317,11 @@ paths:
                                     message:
                                         type: string
                                     user:
-                                        $ref: "#/components/schemas/User" # Assuming User schema definition
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
+                                        $ref: '#/components/schemas/User' # Assuming User schema definition
+                '401':
+                    description: 'Unauthorized'
+                '500':
+                    description: 'Server error'
 
     /user/get-all-test:
         get:
@@ -368,7 +333,7 @@ paths:
                 - user
             description: Retrieve a list of all tests.
             responses:
-                "200":
+                '200':
                     description: List of tests retrieved successfully
                     content:
                         application/json:
@@ -380,13 +345,13 @@ paths:
                                     test:
                                         type: array
                                         items:
-                                            $ref: "#/components/schemas/Test" # Assuming Test schema definition
-                "401":
-                    description: "Unauthorized"
-                "404":
+                                            $ref: '#/components/schemas/Test' # Assuming Test schema definition
+                '401':
+                    description: 'Unauthorized'
+                '404':
                     description: Tests not found in the database
-                "500":
-                    description: "Server error"
+                '500':
+                    description: 'Server error'
 
     /user/get-test-detail/{testId}:
         get:
@@ -399,13 +364,13 @@ paths:
             description: Retrieve details of a test by its ID.
             parameters:
                 - name: testId
-                  in: query
+                  in: path
                   description: ID of the test
                   required: true
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Test details retrieved successfully
                     content:
                         application/json:
@@ -415,13 +380,13 @@ paths:
                                     message:
                                         type: string
                                     test:
-                                        $ref: "#/components/schemas/Test" # Assuming Test schema definition
-                "401":
+                                        $ref: '#/components/schemas/Test' # Assuming Test schema definition
+                '401':
                     description: Unauthorized
-                "404":
+                '404':
                     description: Test not found in the database
-                "500":
-                    description: "Server error"
+                '500':
+                    description: 'Server error'
 
     # api teacher
 
@@ -459,9 +424,9 @@ paths:
                                                 example: true
                                 status:
                                     type: string
-                                    enum: ["active", "inactive", "draft"]
+                                    enum: ['active', 'inactive', 'draft']
             responses:
-                "201":
+                '201':
                     description: Question added successfully
                     content:
                         application/json:
@@ -471,11 +436,11 @@ paths:
                                     message:
                                         type: string
                                     question:
-                                        $ref: "#/components/schemas/Question" # Assuming Question schema definition
-                "400":
+                                        $ref: '#/components/schemas/Question' # Assuming Question schema definition
+                '400':
                     description: Bad request
-                "500":
-                    description: "Server error"
+                '500':
+                    description: 'Server error'
 
     /user/search-question:
         get:
@@ -493,7 +458,7 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Questions retrieved successfully
                     content:
                         application/json:
@@ -503,13 +468,13 @@ paths:
                                     question:
                                         type: array
                                         items:
-                                            $ref: "#/components/schemas/Question" # Assuming Question schema definition
-                "400":
-                    description: "Bad request"
-                "401":
-                    description: "Unauthorized"
-                "500":
-                    description: "Server error"
+                                            $ref: '#/components/schemas/Question' # Assuming Question schema definition
+                '400':
+                    description: 'Bad request'
+                '401':
+                    description: 'Unauthorized'
+                '500':
+                    description: 'Server error'
 
     /user/question-action/{questionId}:
         put:
@@ -550,7 +515,7 @@ paths:
                                     type: string
 
             responses:
-                "200":
+                '200':
                     description: Question updated successfully
                     content:
                         application/json:
@@ -560,15 +525,15 @@ paths:
                                     message:
                                         type: string
                                     question:
-                                        $ref: "#/components/schemas/Question" # Assuming Question schema definition
-                "400":
+                                        $ref: '#/components/schemas/Question' # Assuming Question schema definition
+                '400':
                     description: Bad request
-                "401":
-                    description: "Unauthorized"
-                "404":
+                '401':
+                    description: 'Unauthorized'
+                '404':
                     description: Question not found
-                "500":
-                    description: "Server error"
+                '500':
+                    description: 'Server error'
 
         delete:
             summary: Delete a question
@@ -586,7 +551,7 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Question deleted successfully
                     content:
                         application/json:
@@ -596,13 +561,13 @@ paths:
                                     message:
                                         type: string
                                     questionDeleted:
-                                        $ref: "#/components/schemas/Question" # Assuming Question schema definition
-                "401":
-                    description: "Unauthorized"
-                "404":
+                                        $ref: '#/components/schemas/Question' # Assuming Question schema definition
+                '401':
+                    description: 'Unauthorized'
+                '404':
                     description: Question not found
-                "500":
-                    description: "Server error"
+                '500':
+                    description: 'Server error'
 
     /user/change-status-question:
         put:
@@ -624,7 +589,7 @@ paths:
                                 status:
                                     type: string
             responses:
-                "200":
+                '200':
                     description: Status updated successfully
                     content:
                         application/json:
@@ -635,9 +600,9 @@ paths:
                                         type: string
                                     status:
                                         type: string
-                "400":
+                '400':
                     description: Bad request
-                "404":
+                '404':
                     description: Question not found
 
     /user/create-test:
@@ -657,17 +622,17 @@ paths:
                             properties:
                                 testName:
                                     type: string
-                                    example: "Test 15 min"
+                                    example: 'Test 15 min'
                                 subjectId:
                                     type: string
                                     example: 656aa3ff386d012be7116155
                                 startTime:
                                     type: string
-                                    format: "date-time"
+                                    format: 'date-time'
                                     example: 2023-12-03T22:52:51.987+00:00
                                 endTime:
                                     type: string
-                                    format: "date-time"
+                                    format: 'date-time'
                                     example: 2023-12-06T22:52:51.987+00:00
                                 duringStart:
                                     type: number
@@ -681,7 +646,7 @@ paths:
                                                 type: string
                                                 example: 656d06c34d7773c84a14763e
             responses:
-                "201":
+                '201':
                     description: Test created successfully
                     content:
                         application/json:
@@ -691,33 +656,31 @@ paths:
                                     message:
                                         type: string
                                     test:
-                                        $ref: "#/components/schemas/Test" # Assuming Test schema definition
-                "400":
+                                        $ref: '#/components/schemas/Test' # Assuming Test schema definition
+                '400':
                     description: Bad request
-                "404":
+                '404':
                     description: Subject or question not found
 
     #student api
 
-    /user/register-into-test:
+    /user/register-into-test/{testId}:
         post:
             summary: Register for a test
             security:
                 - Bearer: []
-
+            parameters:
+                - name: testId
+                  in: path
+                  description: ID of the question to update
+                  required: true
+                  schema:
+                      type: string
             tags:
                 - student
             description: Register a student for a test.
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                testId:
-                                    type: string
             responses:
-                "201":
+                '201':
                     description: Registration successful
                     content:
                         application/json:
@@ -726,9 +689,9 @@ paths:
                                 properties:
                                     message:
                                         type: string
-                "400":
+                '400':
                     description: Bad request
-                "404":
+                '404':
                     description: Test not found
 
     /user/get-all-test-student:
@@ -741,7 +704,7 @@ paths:
                 - student
             description: Get all tests registered by a student.
             responses:
-                "200":
+                '200':
                     description: Tests retrieved successfully
                     content:
                         application/json:
@@ -753,8 +716,8 @@ paths:
                                     test:
                                         type: array
                                         items:
-                                            $ref: "#/components/schemas/Test" # Assuming Test schema definition
-                "500":
+                                            $ref: '#/components/schemas/Test' # Assuming Test schema definition
+                '500':
                     description: Internal Server Error
 
     /user/get-up-coming-test:
@@ -767,7 +730,7 @@ paths:
                 - student
             description: Get upcoming tests for a student.
             responses:
-                "200":
+                '200':
                     description: Upcoming tests retrieved successfully
                     content:
                         application/json:
@@ -779,29 +742,27 @@ paths:
                                     test:
                                         type: array
                                         items:
-                                            $ref: "#/components/schemas/Test" # Assuming Test schema definition
-                "500":
+                                            $ref: '#/components/schemas/Test' # Assuming Test schema definition
+                '500':
                     description: Internal Server Error
 
-    /user/start-test:
+    /user/start-test/{testId}:
         put:
             summary: Start a test
             security:
                 - Bearer: []
-
             tags:
                 - student
+            parameters:
+                - name: testId
+                  in: path
+                  required: true
+                  description: 'test id'
+                  schema:
+                      type: string
             description: Start a test for a student.
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                testId:
-                                    type: string
             responses:
-                "200":
+                '200':
                     description: Test started successfully
                     content:
                         application/json:
@@ -813,10 +774,10 @@ paths:
                                     question:
                                         type: array
                                         items:
-                                            $ref: "#/components/schemas/Question" # Assuming Question schema definition
-                "400":
+                                            $ref: '#/components/schemas/Question' # Assuming Question schema definition
+                '400':
                     description: Bad request
-                "404":
+                '404':
                     description: Test not found or not registered
 
     /user/to-result-test:
@@ -846,7 +807,7 @@ paths:
                                             selectedAnswer:
                                                 type: string
             responses:
-                "200":
+                '200':
                     description: Test results submitted successfully
                     content:
                         application/json:
@@ -861,9 +822,9 @@ paths:
                                         type: number
                                     result:
                                         type: number
-                "400":
+                '400':
                     description: Bad request
-                "404":
+                '404':
                     description: Test not found or not registered
 
     /user/get-all-complete-test:
@@ -876,7 +837,7 @@ paths:
                 - student
             description: Retrieve a list of completed tests for a student.
             responses:
-                "200":
+                '200':
                     description: Successfully retrieved completed tests
                     content:
                         application/json:
@@ -888,8 +849,8 @@ paths:
                                     test:
                                         type: array
                                         items:
-                                            $ref: "#/components/schemas/Test" # Assuming Test schema definition
-                "500":
+                                            $ref: '#/components/schemas/Test' # Assuming Test schema definition
+                '500':
                     description: Internal Server Error
 
     /user/get-result-test/{testId}:
@@ -909,7 +870,7 @@ paths:
                   schema:
                       type: string
             responses:
-                "200":
+                '200':
                     description: Successfully retrieved result for the test
                     content:
                         application/json:
@@ -918,9 +879,9 @@ paths:
                                 properties:
                                     result:
                                         type: number
-                "404":
+                '404':
                     description: Test not found
-                "500":
+                '500':
                     description: Internal Server Error
 
 components:
@@ -944,15 +905,15 @@ components:
                     example: $2a$10$ggUNzMfQ0sOe8ex4DsC0Puiup7XR/Ycz1oSSngjlCIITU7v3iQ8t6
                 role:
                     type: integer
-                    description: "Role admin(0), teacher(1), student(2)"
+                    description: 'Role admin(0), teacher(1), student(2)'
                     enum: [1, 2, 3]
                 status:
                     type: string
-                    description: "Status account"
-                    enum: ["active", "block"]
+                    description: 'Status account'
+                    enum: ['active', 'block']
                     default: active
         Subject:
-            type: "object"
+            type: 'object'
             required:
                 - subjectCode
                 - subjectName
@@ -961,11 +922,11 @@ components:
                     type: string
                     format: objectId
                 subjectCode:
-                    type: "number"
+                    type: 'number'
                 subjectName:
-                    type: "string"
+                    type: 'string'
         Question:
-            type: "object"
+            type: 'object'
             required:
                 - _id
                 - subjectId
@@ -973,80 +934,80 @@ components:
                 - status
             properties:
                 _id:
-                    type: "string"
+                    type: 'string'
                     format: objectId
                 subjectId:
-                    type: "string"
+                    type: 'string'
                 questionName:
-                    type: "string"
+                    type: 'string'
                 answer:
-                    type: "array"
+                    type: 'array'
                     items:
-                        type: "object"
+                        type: 'object'
                         properties:
                             content:
-                                type: "string"
+                                type: 'string'
                             isTrue:
-                                type: "boolean"
+                                type: 'boolean'
                 status:
-                    type: "string"
-                    description: "status of question"
-                    enum: ["active", "inactive", "draft"]
-                    default: "active"
+                    type: 'string'
+                    description: 'status of question'
+                    enum: ['active', 'inactive', 'draft']
+                    default: 'active'
         Test:
-            type: "object"
+            type: 'object'
             properties:
                 _id:
                     type: string
                     format: objectId
                 testName:
-                    type: "string"
+                    type: 'string'
                 subjectId:
-                    type: "string"
+                    type: 'string'
                 authTest:
-                    type: "string"
+                    type: 'string'
                 student:
-                    type: "array"
+                    type: 'array'
                     items:
-                        type: "object"
+                        type: 'object'
                         properties:
                             studentId:
-                                type: "string"
+                                type: 'string'
                             startTest:
-                                type: "string"
-                                format: "date-time"
-                                description: "time start a test"
+                                type: 'string'
+                                format: 'date-time'
+                                description: 'time start a test'
                             during:
-                                type: "number"
-                                description: "during time a test"
+                                type: 'number'
+                                description: 'during time a test'
                             result:
-                                type: "string"
-                                description: "result a test"
+                                type: 'string'
+                                description: 'result a test'
                             status:
-                                type: "string"
-                                enum: ["Completed", "Not-complete"]
-                                default: "Not-complete"
-                                description: "status a test of student"
+                                type: 'string'
+                                enum: ['Completed', 'Not-complete']
+                                default: 'Not-complete'
+                                description: 'status a test of student'
                 status:
-                    type: "string"
+                    type: 'string'
                     enum:
-                        ["Scheduled", "Active", "Completed", "Draft", "Cancel"]
-                    description: "Status a test"
+                        ['Scheduled', 'Active', 'Completed', 'Draft', 'Cancel']
+                    description: 'Status a test'
                 startTime:
-                    type: "string"
-                    format: "date-time"
+                    type: 'string'
+                    format: 'date-time'
                 endTime:
-                    type: "string"
-                    format: "date-time"
+                    type: 'string'
+                    format: 'date-time'
                 duringStart:
-                    type: "number"
+                    type: 'number'
                 question:
-                    type: "array"
+                    type: 'array'
                     items:
-                        type: "object"
+                        type: 'object'
                         properties:
                             questionId:
-                                type: "string"
+                                type: 'string'
     securitySchemes:
         Bearer:
             type: apiKey

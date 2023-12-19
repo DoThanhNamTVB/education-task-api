@@ -1,18 +1,18 @@
-const jwt = require("jsonwebtoken");
-const User = require("../model/User");
-require("dotenv").config();
+const jwt = require('jsonwebtoken');
+const User = require('../model/User');
+require('dotenv').config();
 const isAuthHandler = (req, res, next) => {
     try {
-        const token = req.headers.authorization?.split(" ")[1];
+        const token = req.headers.authorization?.split(' ')[1];
         if (!token) {
             return res.status(401).json({
-                message: "You are not authorized",
+                message: 'You are not authorized',
             });
         }
-        jwt.verify(token, process.env.jWT_SECRET, (err, user) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
             if (err) {
                 return res.status(401).json({
-                    message: "Token is expired",
+                    message: 'Token is expired',
                 });
             }
             req.user = user;
@@ -31,7 +31,7 @@ const isAdminHanndler = async (req, res, next) => {
         next();
     } else {
         return res.status(401).json({
-            message: "You are not admin",
+            message: 'You are not admin',
         });
     }
 };
@@ -41,7 +41,7 @@ const isAuth = (req, res, next) => {
         next();
     } else {
         return res.status(401).json({
-            message: "You are not authorized",
+            message: 'You are not authorized',
         });
     }
 };
@@ -52,7 +52,7 @@ const isAdmin = (req, res, next) => {
             next();
         } else {
             return res.status(401).json({
-                message: "You are not admin",
+                message: 'You are not admin',
             });
         }
     } catch (error) {
@@ -66,7 +66,7 @@ const isTeacher = (req, res, next) => {
         next();
     } else {
         return res.status(401).json({
-            message: "You are not teacher",
+            message: 'You are not teacher',
         });
     }
 };
@@ -76,7 +76,7 @@ const isStudent = (req, res, next) => {
         next();
     } else {
         return res.status(401).json({
-            message: "You are not student",
+            message: 'You are not student',
         });
     }
 };

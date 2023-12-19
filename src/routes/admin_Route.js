@@ -1,42 +1,34 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const { isAdmin } = require("../middleware/jwt-passport");
+const { isAdmin } = require('../middleware/jwt-passport');
 
 const {
     register,
     removeUser,
     unblockUser,
-    addSubject,
-    removeSubject,
-    getAllSubject,
     getAllTeacher,
     getAllStudent,
     login,
-} = require("../controllers/Admin/adminController");
-const passport = require("passport");
-const authenJWT = passport.authenticate("jwt", { session: false });
+} = require('../controllers/Admin/adminController');
+const passport = require('passport');
+const {
+    addSubject,
+    getAllSubject,
+    removeSubject,
+} = require('../controllers/Admin/subjectController');
+const authenJWT = passport.authenticate('jwt', { session: false });
 
-// router.post("/register", passport.authenticate("local-signup"), (req, res) => {
-//     const token = generateToken(req.user);
-//     res.status(200).json({
-//         message: "Login successful",
-//         user: req.user,
-//         token: token,
-//     });
-// });
-router.post("/register", authenJWT, isAdmin, register);
-router.post("/login", login);
+router.post('/register', register);
+router.post('/login', login);
 
-router
-    .route("/:userId")
-    .delete(authenJWT, isAdmin, removeUser)
-    .put(authenJWT, isAdmin, unblockUser);
-router
-    .route("/subject")
-    .post(authenJWT, isAdmin, addSubject)
-    .delete(authenJWT, isAdmin, removeSubject)
-    .get(authenJWT, isAdmin, getAllSubject);
-router.get("/all-teacher", authenJWT, isAdmin, getAllTeacher);
-router.get("/all-student", authenJWT, isAdmin, getAllStudent);
+router.route('/remove-user/:userId').put(authenJWT, isAdmin, removeUser);
+router.route('/unblock-user/:userId').put(authenJWT, isAdmin, unblockUser);
+router.get('/all-teacher', authenJWT, isAdmin, getAllTeacher);
+router.get('/all-student', authenJWT, isAdmin, getAllStudent);
+
+//work with subject
+router.post('/subject/:subjectName', authenJWT, isAdmin, addSubject);
+router.get('/subject', authenJWT, isAdmin, getAllSubject);
+router.delete('/subject/:subjectCode', authenJWT, isAdmin, removeSubject);
 
 module.exports = router;
