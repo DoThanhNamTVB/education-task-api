@@ -59,10 +59,10 @@ router.post('/create-test', authenJWT, isTeacher, createTest);
 
 //router student
 
-router.post('/register-into-test', authenJWT, isStudent, registerTest);
+router.post('/register-into-test/:testId', authenJWT, isStudent, registerTest);
 router.get('/get-all-test-student', authenJWT, isStudent, getAllTestStudent);
 router.get('/get-up-coming-test', authenJWT, isStudent, getUpComingTest);
-router.put('/start-test', authenJWT, isStudent, startTest);
+router.put('/start-test/:testId', authenJWT, isStudent, startTest);
 router.put('/to-result-test', authenJWT, isStudent, toResultTest);
 router.get('/get-all-complete-test', authenJWT, isStudent, getAllCompleteTest);
 router.get('/get-result-test/:testId', authenJWT, isStudent, getResultTest);
