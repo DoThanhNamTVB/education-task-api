@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const testSchema = new mongoose.Schema(
@@ -10,28 +10,28 @@ const testSchema = new mongoose.Schema(
         subjectId: {
             type: Schema.ObjectId,
             required: true,
-            ref: "Subject",
+            ref: 'Subject',
         },
         authTest: {
             type: Schema.ObjectId,
-            ref: "User",
+            ref: 'User',
         },
         student: [
             {
-                studentId: { type: Schema.ObjectId, ref: "User" },
+                studentId: { type: Schema.ObjectId, ref: 'User' },
                 startTest: Date,
                 during: Number,
                 result: String,
                 status: {
                     type: String,
-                    enum: ["Completed", "Not-complete"],
-                    default: "Not-complete",
+                    enum: ['Completed', 'Not-complete'],
+                    default: 'Not-complete',
                 },
             },
         ],
         status: {
             type: String,
-            enum: ["Scheduled", "Active", "Completed", "Draf", "Cancel"],
+            enum: ['Scheduled', 'Active', 'Completed', 'Draf', 'Cancel'],
         },
         startTime: { type: Date },
         endTime: { type: Date },
@@ -44,7 +44,7 @@ const testSchema = new mongoose.Schema(
                 questionId: {
                     type: Schema.ObjectId,
                     required: true,
-                    ref: "Question",
+                    ref: 'Question',
                 },
             },
         ],
@@ -55,25 +55,25 @@ const testSchema = new mongoose.Schema(
 );
 
 //middleware set status test
-testSchema.pre("save", function (next) {
+testSchema.pre('save', function (next) {
     const now = new Date();
     if (this.startTime !== null && this.endTime !== null) {
         if (now < this.startTime) {
-            this.status = "Scheduled";
+            this.status = 'Scheduled';
         } else if (now > this.endTime) {
-            this.status = "Completed";
+            this.status = 'Completed';
         } else {
-            this.status = "Active";
+            this.status = 'Active';
         }
     } else {
-        this.status = "Draft";
+        this.status = 'Draft';
     }
     next();
 });
 
 //middleware convert to ObjectId
 
-testSchema.pre("save", function (next) {
+testSchema.pre('save', function (next) {
     this.authTest = new mongoose.Types.ObjectId(this.authTest);
 
     this.question = this.question.map((item) => {
@@ -85,4 +85,4 @@ testSchema.pre("save", function (next) {
     next();
 });
 
-module.exports = mongoose.model("Test", testSchema);
+module.exports = mongoose.model('Test', testSchema);
