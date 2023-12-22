@@ -10,7 +10,7 @@ const addQuestion = asyncHandler(async (req, res) => {
         const findSubject = await Subject.findById(subjectId);
         if (!findSubject) {
             return res.status(404).json({
-                message: "Not found subject",
+                message: "Not found subject with this subjectid",
             });
         }
         const { questionName, answer, status } = req.body;
@@ -144,24 +144,6 @@ const updateQuestion = asyncHandler(async (req, res) => {
 
             if (checkAnnswer === true) {
                 checkQuestion.answer = answer;
-                // const getIndex = [];
-                // answer.forEach((item, index) => {
-                //     if (item._id) {
-                //         getIndex.push(index);
-                //     } else {
-                //         checkQuestion.answer.push({
-                //             content: item.content,
-                //             isTrue: item.isTrue,
-                //         });
-                //     }
-                // });
-
-                // getIndex?.length > 0 &&
-                //     getIndex.forEach((item) => {
-                //         checkQuestion.answer[item].content =
-                //             answer[item].content;
-                //         checkQuestion.answer[item].isTrue = answer[item].isTrue;
-                //     });
             }
         }
 
@@ -282,7 +264,7 @@ const createTest = asyncHandler(async (req, res) => {
             const findSubject = await Subject.findById(subjectId);
             if (!findSubject) {
                 return res.status(404).json({
-                    message: "Not found subject",
+                    message: "Not found subject with this subjectId",
                 });
             }
 

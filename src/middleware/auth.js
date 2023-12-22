@@ -9,7 +9,7 @@ const isAuthHandler = (req, res, next) => {
                 message: "You are not authorized",
             });
         }
-        jwt.verify(token, process.env.jWT_SECRET, (err, user) => {
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
             if (err) {
                 return res.status(401).json({
                     message: "Token is expired",

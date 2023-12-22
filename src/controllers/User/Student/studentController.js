@@ -221,18 +221,6 @@ const toResultTest = asyncHandler(async (req, res) => {
 const getAllCompleteTest = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
-        // const getTestComplete = await Test.find({
-        // "student.studentId": student._id,
-        // "student.status": "Completed",
-        // })
-        //     .select(
-        //         "_id testName subjectId student startTime endTime duringStart"
-        //     )
-        //     .populate({
-        //         path: "subjectId",
-        //         model: "Subject",
-        //         select: "subjectName",
-        //     });
 
         const getTestComplete = await Test.aggregate([
             {
@@ -274,7 +262,7 @@ const getResultTest = asyncHandler(async (req, res) => {
                 result: result + "/" + totalQuestion,
             });
         } else {
-            return res.status(404).json("Not found test in database");
+            return res.status(404).json("Not found test in  with this testId");
         }
     } catch (error) {
         res.status(500);

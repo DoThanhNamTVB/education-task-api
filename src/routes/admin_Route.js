@@ -27,15 +27,13 @@ const authenJWT = passport.authenticate("jwt", { session: false });
 router.post("/register", authenJWT, isAdmin, register);
 router.post("/login", login);
 
-router
-    .route("/:userId")
-    .delete(authenJWT, isAdmin, removeUser)
-    .put(authenJWT, isAdmin, unblockUser);
+router.route("/remove-user/:userId").put(authenJWT, isAdmin, removeUser);
+router.route("/unblock-user/:userId").put(authenJWT, isAdmin, unblockUser);
 router
     .route("/subject")
     .post(authenJWT, isAdmin, addSubject)
-    .delete(authenJWT, isAdmin, removeSubject)
     .get(authenJWT, isAdmin, getAllSubject);
+router.delete("/subject/:subjectCode", authenJWT, isAdmin, removeSubject);
 router.get("/all-teacher", authenJWT, isAdmin, getAllTeacher);
 router.get("/all-student", authenJWT, isAdmin, getAllStudent);
 

@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  # Dịch vụ Node.js
+  nodejs-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+
+  # Dịch vụ MongoDB
+  mongodb:
+    image: "mongo:latest"
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+    environment:
+      - MONGO_CONNECTION_STRING=${MONGO_CONNECTION_STRING}
+# run and create compose : docker-compose -p docker-education up -d
