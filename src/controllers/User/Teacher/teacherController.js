@@ -1,29 +1,27 @@
-const Question = require("../../../model/Question");
-const Subject = require("../../../model/Subject");
-const Test = require("../../../model/Test");
-const asyncHandler = require("express-async-handler");
-const mongoose = require("mongoose");
+const Question = require('../../../model/Question');
+const Subject = require('../../../model/Subject');
+const Test = require('../../../model/Test');
+const asyncHandler = require('express-async-handler');
+const mongoose = require('mongoose');
 
 const addQuestion = asyncHandler(async (req, res) => {
     try {
-        const { subjectId } = req.body;
+        const { subjectId, questionName, answer, status } = req.body;
         const findSubject = await Subject.findById(subjectId);
         if (!findSubject) {
             return res.status(404).json({
-                message: "Not found subject with this subjectid",
+                message: 'Not found subject with this subjectid',
             });
         }
-        const { questionName, answer, status } = req.body;
 
-        console.log(typeof answer);
         //fuction check answer
         let checkAnnswer = false;
         if (answer?.length > 0) {
             const check = answer.every((item) => {
                 return (
-                    typeof item.isTrue === "boolean" &&
+                    typeof item.isTrue === 'boolean' &&
                     item.content.trim() !== null &&
-                    item.content.trim() !== "" &&
+                    item.content.trim() !== '' &&
                     item.isTrue !== null
                 );
             });
@@ -33,14 +31,14 @@ const addQuestion = asyncHandler(async (req, res) => {
         //check questionName , answer
         if (!questionName || checkAnnswer === false) {
             return res.status(400).json({
-                message: "require correct format",
+                message: 'question require correct format',
             });
         }
         //check status
-        const dataStatus = ["active", "inactive", "draft"];
+        const dataStatus = ['active', 'inactive', 'draft'];
         if (status && !dataStatus.includes(status)) {
             return res.status(400).json({
-                message: "status is invalid",
+                message: 'status is invalid',
             });
         }
 
@@ -52,7 +50,7 @@ const addQuestion = asyncHandler(async (req, res) => {
         });
 
         return res.status(201).json({
-            message: "add question is oke",
+            message: 'add question is oke',
             question: question,
         });
     } catch (error) {
@@ -67,23 +65,19 @@ const searchQuestion = asyncHandler(async (req, res) => {
 
         //search by question name
         const search = await Question.find({
-            questionName: { $regex: questionName.trim(), $options: "i" },
+            questionName: { $regex: questionName.trim(), $options: 'i' },
         }).populate({
-            path: "subjectId",
-            model: "Subject",
+            path: 'subjectId',
+            model: 'Subject',
         });
 
-        if (search) {
+        if (search.length > 0) {
             return res.status(200).json({
+                message: 'Get question by search successfull',
                 question: search,
-            });
-        } else {
-            return res.status(404).json({
-                message: "Not found question",
             });
         }
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -92,17 +86,12 @@ const updateQuestion = asyncHandler(async (req, res) => {
     try {
         const { questionId } = req.params;
         const { subjectId, questionName, answer, status } = req.body;
-        //checkquestiion id
-        if (!questionId) {
-            return res.status(404).json({
-                message: "question id is null",
-            });
-        }
+
         //check question
         const checkQuestion = await Question.findById(questionId);
         if (!checkQuestion) {
             return res.status(404).json({
-                message: "Not found question in database",
+                message: 'Not found question in database',
             });
         }
 
@@ -112,10 +101,12 @@ const updateQuestion = asyncHandler(async (req, res) => {
 
             if (!findSubject) {
                 return res.status(404).json({
-                    message: "Not found subject",
+                    message: 'Not found subject',
                 });
             } else {
-                checkQuestion.subjectId = mongoose.Types.ObjectId(subjectId);
+                checkQuestion.subjectId = new mongoose.Types.ObjectId(
+                    subjectId
+                );
             }
         }
 
@@ -123,13 +114,15 @@ const updateQuestion = asyncHandler(async (req, res) => {
         if (answer) {
             let checkAnnswer = false;
             //check typeof answer
-            if (answer?.length > 0) {
+            if (answer.content === undefined || answer.isTrue === undefined) {
+                checkAnnswer = false;
+            } else if (answer?.length > 0) {
                 const check = answer.every((item) => {
                     return (
-                        typeof item.isTrue === "boolean" &&
-                        item.content.trim() !== null &&
-                        item.content.trim() !== "" &&
-                        item.isTrue !== null
+                        typeof item?.isTrue === 'boolean' &&
+                        item?.content.trim() !== null &&
+                        item?.content.trim() !== '' &&
+                        item?.isTrue !== null
                     );
                 });
                 checkAnnswer = check;
@@ -138,7 +131,7 @@ const updateQuestion = asyncHandler(async (req, res) => {
             //return if false
             if (checkAnnswer === false) {
                 return res.status(400).json({
-                    message: "data answer is not correct format",
+                    message: 'data answer is not correct format',
                 });
             }
 
@@ -154,10 +147,10 @@ const updateQuestion = asyncHandler(async (req, res) => {
 
         //check status
         if (status) {
-            const dataStatus = ["active", "inactive", "draft"];
+            const dataStatus = ['active', 'inactive', 'draft'];
             if (!dataStatus.includes(status)) {
                 return res.status(400).json({
-                    message: "status is invalid",
+                    message: 'status is invalid',
                 });
             } else {
                 checkQuestion.status = status;
@@ -167,11 +160,10 @@ const updateQuestion = asyncHandler(async (req, res) => {
         //updatequestion
         await checkQuestion.save();
         res.status(200).json({
-            message: "update question oke",
+            message: 'update question oke',
             question: checkQuestion,
         });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -180,21 +172,15 @@ const deleteQuestion = asyncHandler(async (req, res) => {
     try {
         const { questionId } = req.params;
 
-        if (questionId) {
-            const response = await Question.findByIdAndDelete(questionId);
-            if (response) {
-                return res.status(200).json({
-                    message: "delete question oke",
-                    questionDeleted: response,
-                });
-            } else {
-                return res.status(404).json({
-                    message: "No this question in database",
-                });
-            }
+        const response = await Question.findByIdAndDelete(questionId);
+        if (response) {
+            return res.status(200).json({
+                message: 'delete question oke',
+                questionDeleted: response,
+            });
         } else {
-            return res.status(400).json({
-                message: "question id is null",
+            return res.status(404).json({
+                message: 'No this question in database',
             });
         }
     } catch (error) {
@@ -210,11 +196,11 @@ const changeStatusQuestion = asyncHandler(async (req, res) => {
         //check required
         if (!questionId || !status) {
             return res.status(400).json({
-                message: "questionId,status is require",
+                message: 'questionId, status is require',
             });
         }
         //check status
-        const dataStatus = ["active", "inactive", "draft"];
+        const dataStatus = ['active', 'inactive', 'draft'];
         if (status && !dataStatus.includes(status)) {
             return res.status(400).json({
                 message:
@@ -223,17 +209,18 @@ const changeStatusQuestion = asyncHandler(async (req, res) => {
         }
 
         //get data
-        const response = await Question.findById(questionId);
+        const response = await Question.findByIdAndUpdate(questionId, {
+            status: status,
+        });
+
         if (response) {
-            response.status = status;
-            await response.save();
             return res.status(200).json({
-                message: "update status is oke",
+                message: 'update status is oke',
                 status: response.status,
             });
         } else {
-            return res.status(400).json({
-                message: "Not found question with this id",
+            return res.status(404).json({
+                message: 'Not found question with this id',
             });
         }
     } catch (error) {
@@ -257,20 +244,20 @@ const createTest = asyncHandler(async (req, res) => {
         if (!testName || !subjectId || !user?.id || !duringStart || !question) {
             return res.status(400).json({
                 message:
-                    "Data is require : testName, subjectId, auth, duringStart, question ",
+                    'Data is require : testName, subjectId, auth, duringStart, question ',
             });
         } else {
             //check subjectid in database
             const findSubject = await Subject.findById(subjectId);
             if (!findSubject) {
                 return res.status(404).json({
-                    message: "Not found subject with this subjectId",
+                    message: 'Not found subject with this subjectId',
                 });
             }
 
             //check question
             //get list id question indatabase
-            const getQuestionId = await Question.find().select("_id");
+            const getQuestionId = await Question.find();
             const dataQuestion = [];
             getQuestionId?.forEach((item) => {
                 dataQuestion.push(item._id.toString());
@@ -288,7 +275,7 @@ const createTest = asyncHandler(async (req, res) => {
 
             if (resultCheckQuestionId === false) {
                 return res.status(404).json({
-                    message: `Not found question ${indexQuestionFalse} in database`,
+                    message: `Not found question with id in database`,
                 });
             }
 
@@ -304,12 +291,11 @@ const createTest = asyncHandler(async (req, res) => {
             });
 
             return res.status(201).json({
-                message: "create test oke",
+                message: 'create test oke',
                 test: response,
             });
         }
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });

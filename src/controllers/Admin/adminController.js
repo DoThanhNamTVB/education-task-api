@@ -1,16 +1,13 @@
 const User = require('../../model/User');
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../../utils/generateToken');
-const Subject = require('../../model/Subject');
-const bcrypt = require('bcryptjs');
 
 const register = asyncHandler(async (req, res) => {
     try {
         const { username, password, role } = req.body;
-        // console.log(username, password, role);
 
         //check invalid data
-        if (!username || !password || !role) {
+        if (!username || !password || !+role) {
             return res.status(400).json({
                 message: 'Please fill all username, password, role',
             });
@@ -21,7 +18,7 @@ const register = asyncHandler(async (req, res) => {
         const checkUsername = regex.test(username);
         if (!checkUsername) {
             return res.status(400).json({
-                message: 'username is invalid',
+                message: 'Username is invalid',
             });
         }
 
@@ -41,10 +38,11 @@ const register = asyncHandler(async (req, res) => {
                 username: username,
                 password: password,
                 role: +role,
+                status: 'block',
             });
 
             res.status(201).json({
-                message: 'Create account oke',
+                message: 'Create account oke, waiting admin approve',
                 user: {
                     username: userNew.username,
                     role:
@@ -56,8 +54,8 @@ const register = asyncHandler(async (req, res) => {
                 },
             });
         } else {
-            return res.status(400).json({
-                message: 'username is exits. Please use another username ',
+            return res.status(500).json({
+                message: 'username is exits. Please use another username',
             });
         }
     } catch (error) {
@@ -89,7 +87,7 @@ const login = asyncHandler(async (req, res) => {
                 token: token,
             });
         } else {
-            res.status(400).json({ message: 'Invalid username or password' });
+            res.status(500).json({ message: 'Invalid username or password' });
         }
     } catch (error) {
         res.status(500);
@@ -122,14 +120,14 @@ const unblockUser = asyncHandler(async (req, res) => {
     try {
         const { userId } = req.params;
         const user = await User.findById({ _id: userId });
-        if (user.status === 'block') {
+        if (user && user.status === 'block') {
             user.status = 'active';
             await user.save();
             res.status(200).json({
-                message: `Account ${user.username} has ${user.status}`,
+                message: `Account has ${user.status}`,
             });
-        } else if ((user.status = 'active')) {
-            res.status(400).json({
+        } else if (user && (user.status = 'active')) {
+            res.status(500).json({
                 message: `The account is not block`,
             });
         } else {
@@ -138,83 +136,6 @@ const unblockUser = asyncHandler(async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(500);
-        throw new Error(error);
-    }
-});
-
-const addSubject = asyncHandler(async (req, res) => {
-    try {
-        const { subjectName } = req.body;
-        if (!subjectName) {
-            return res.status(400).json({
-                message: 'subjectName can null. Please fullfill',
-            });
-        }
-
-        //auto generate subject code
-        function generateUniqueCode(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
-
-        async function isCodeUnique() {
-            let subjectCode;
-
-            do {
-                subjectCode = generateUniqueCode(1000, 10000);
-            } while (await Subject.exists({ subjectCode: subjectCode }));
-            return subjectCode;
-        }
-
-        const subjectCode = await isCodeUnique();
-
-        const subject = await Subject.create({
-            subjectCode: subjectCode,
-            subjectName: subjectName,
-        });
-        res.status(201).json({
-            message: 'Subject is created',
-            subject,
-        });
-    } catch (error) {
-        res.status(500);
-        throw new Error(error);
-    }
-});
-
-const removeSubject = asyncHandler(async (req, res) => {
-    try {
-        const { subjectCode } = req.params;
-        if (!subjectCode) {
-            return res.status(400).json({
-                message: 'subjectCode is require field',
-            });
-        }
-        const result = await Subject.findOneAndDelete({
-            subjectCode: subjectCode,
-        });
-        if (!result) {
-            return res.status(404).json({
-                message: 'Subject not found in database',
-            });
-        } else {
-            return res.status(200).json({
-                message: 'Subject deleted',
-            });
-        }
-    } catch (error) {
-        res.status(500);
-        throw new Error(error);
-    }
-});
-
-const getAllSubject = asyncHandler(async (req, res) => {
-    try {
-        const subjectAll = await Subject.find();
-
-        res.status(200).json(subjectAll?.length > 0 ? subjectAll : null);
-    } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -223,9 +144,11 @@ const getAllTeacher = asyncHandler(async (req, res) => {
     try {
         const teacherAll = await User.find({ role: 2 });
 
-        res.status(200).json(teacherAll?.length > 0 ? teacherAll : null);
+        res.status(200).json({
+            message: 'Get list teachers successfull',
+            teachers: teacherAll?.length > 0 ? teacherAll : null,
+        });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -234,9 +157,11 @@ const getAllStudent = asyncHandler(async (req, res) => {
     try {
         const studentAll = await User.find({ role: 3 });
 
-        res.status(200).json(studentAll?.length > 0 ? studentAll : null);
+        res.status(200).json({
+            message: 'Get list students successfull',
+            students: studentAll?.length > 0 ? studentAll : null,
+        });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -245,9 +170,6 @@ module.exports = {
     login,
     removeUser,
     unblockUser,
-    addSubject,
-    removeSubject,
-    getAllSubject,
     getAllTeacher,
     getAllStudent,
 };
