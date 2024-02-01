@@ -18,11 +18,6 @@ const userSchema = new mongoose.Schema(
             // 1 : admin, 2 : giáo viên , 3 : học sinh
             enum: [1, 2, 3],
         },
-        // image: {
-        //     path: String,
-        //     name: String,
-        // },
-        // dateOfBirth: Date,
         status: {
             type: String,
             enum: ['active', 'block'],

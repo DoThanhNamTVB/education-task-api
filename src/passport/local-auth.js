@@ -16,42 +16,6 @@ passport.deserializeUser(async (id, done) => {
     }
 });
 
-// passport.use(
-//     "local-signup",
-//     new localStrategy(
-//         {
-//             usernameField: "username",
-//             passwordField: "password",
-//             passReqToCallback: true,
-//         },
-//         async (req, username, password, done) => {
-//             const { role } = req.body;
-//             if (!username || !password || !role) {
-//                 return done(null, false);
-//             }
-//             if (+role !== 1 && +role !== 2 && +role !== 3) {
-//                 return done(null, false);
-//             }
-//             // find username in database
-//             const checkUser = await User.findOne({
-//                 username: username,
-//             });
-
-//             if (!checkUser) {
-//                 const userNew = await User.create({
-//                     username: username,
-//                     password: password,
-//                     role: +role,
-//                 });
-
-//                 return done(null, userNew);
-//             } else {
-//                 done(null, false);
-//             }
-//         }
-//     )
-// );
-
 passport.use(
     new localStrategy(
         {

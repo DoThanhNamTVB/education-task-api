@@ -1,17 +1,17 @@
 const Question = require('../../../model/Question');
-// const Subject = require('../../../model/Subject');
+const Subject = require('../../../model/Subject');
 const Test = require('../../../model/Test');
 const asyncHandler = require('express-async-handler');
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const registerTest = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
-        const { testId } = req.body;
+        const { testId } = req.params;
         const findTest = await Test.findById(testId);
         if (!findTest) {
-            return res.status(400).json({
-                message: `Not found test with id : ${testId}`,
+            return res.status(404).json({
+                message: `Not found test`,
             });
         }
 
@@ -19,7 +19,7 @@ const registerTest = asyncHandler(async (req, res) => {
         const dataStatus = ['Completed', 'Draf', 'Cancel'];
         if (dataStatus.includes(findTest.status)) {
             return res.status(400).json({
-                message: `Not allow to register test , status test is ${findTest.status}`,
+                message: `Not allow to register test with status test now: ${findTest.status}`,
             });
         }
         findTest.student.push({ studentId: student?._id });
@@ -40,28 +40,12 @@ const getAllTestStudent = asyncHandler(async (req, res) => {
         const student = req.user;
         const findtest = await Test.find({
             'student.studentId': student._id,
-        })
-            .populate({
-                path: 'authTest',
-                model: 'User',
-                select: 'username',
-            })
-            .populate({
-                path: 'subjectId',
-                model: 'Subject',
-                select: 'subjectCode subjectName',
-            })
-            .populate({
-                path: 'question.questionId',
-                model: 'question',
-                select: 'questionName answer.content',
-            });
+        }).select('_id testName authTest startTime endTime status duringStart');
         res.status(200).json({
             message: 'Get all test student successfull',
             test: findtest || [],
         });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -94,7 +78,6 @@ const getUpComingTest = asyncHandler(async (req, res) => {
             test: findAllTestComing || [],
         });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -102,7 +85,7 @@ const getUpComingTest = asyncHandler(async (req, res) => {
 //start a test
 const startTest = asyncHandler(async (req, res) => {
     try {
-        const { testId } = req.body;
+        const { testId } = req.params;
         const student = req.user;
         //check test exist
         const test = await Test.findById(testId);
@@ -175,12 +158,12 @@ const toResultTest = asyncHandler(async (req, res) => {
             //get question from database
             const question = await Question.findById(questionId);
 
-            const correctAnser = question.answer.find(
+            const correctAnser = question?.answer.find(
                 (answer) => answer.isTrue
             );
             if (
                 correctAnser &&
-                selectedAnswer.trim() === correctAnser.content
+                selectedAnswer === correctAnser._id.toString()
             ) {
                 total += 1;
             }
@@ -204,6 +187,7 @@ const toResultTest = asyncHandler(async (req, res) => {
             getTest.student[index].status = 'Completed';
             await getTest.save();
             return res.status(200).json({
+                message: 'Calcular result oke',
                 testId: getTest._id,
                 testName: getTest.testName,
                 duringTime: during,
@@ -211,7 +195,6 @@ const toResultTest = asyncHandler(async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -221,18 +204,6 @@ const toResultTest = asyncHandler(async (req, res) => {
 const getAllCompleteTest = asyncHandler(async (req, res) => {
     try {
         const student = req.user;
-        // const getTestComplete = await Test.find({
-        // "student.studentId": student._id,
-        // "student.status": "Completed",
-        // })
-        //     .select(
-        //         "_id testName subjectId student startTime endTime duringStart"
-        //     )
-        //     .populate({
-        //         path: "subjectId",
-        //         model: "Subject",
-        //         select: "subjectName",
-        //     });
 
         const getTestComplete = await Test.aggregate([
             {
@@ -244,16 +215,12 @@ const getAllCompleteTest = asyncHandler(async (req, res) => {
                     'student.status': 'Completed',
                 },
             },
-            // {
-            //     $replaceRoot: { newRoot: "$student" },
-            // },
         ]);
         return res.status(200).json({
             message: 'Get completed test success',
             test: getTestComplete || null,
         });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -269,6 +236,12 @@ const getResultTest = asyncHandler(async (req, res) => {
             const index = getTest.student.findIndex((item) => {
                 return item.studentId.equals(studenttest._id) === true;
             });
+
+            if (!index || !getTest.student[index]?.result) {
+                return res.status(500).json({
+                    message: 'You have not taken this test yet',
+                });
+            }
             const result = getTest.student[index]?.result || null;
             return res.status(200).json({
                 result: result + '/' + totalQuestion,
@@ -277,7 +250,6 @@ const getResultTest = asyncHandler(async (req, res) => {
             return res.status(404).json('Not found test in database');
         }
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });

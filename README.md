@@ -41,9 +41,13 @@
 
 # Step for run project
 
-> Step 1 : Clone project github : git clone https://github.com/DoThanhNamTVB/education-task-api
+> Step 1 : Clone project github :
 
-> Step 2 : In project clone, please dowload all dependences in package.json : npm i / npm install
+git clone https://github.com/DoThanhNamTVB/education-task-api
+
+> Step 2 : In project clone, please dowload all dependences in package.json :
+
+npm i / npm install
 
 > Step 3 : Config file .env from .env-example
 

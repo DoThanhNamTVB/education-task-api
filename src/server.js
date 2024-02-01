@@ -11,8 +11,9 @@ const session = require('express-session');
 const swaggerUI = require('swagger-ui-express');
 const YAML = require('yamljs'); // Để đọc tệp YAML
 const swaggerDocument = YAML.load('src/swagger.yaml');
-// const flash = require("connect-flash");
+
 const port = process.env.PORT;
+const { dailyCheckStatus } = require('./utils/dailyCheckStatus');
 
 //connect db
 DB.connect();
@@ -53,10 +54,16 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 //Routing
 initRoutes(app);
 
+//check status test daily
+dailyCheckStatus();
+
 //middleware error handle
 app.use(notFound);
 app.use(errorHandler);
 //run server
-app.listen(port, () => {
+
+const server = app.listen(port, () => {
     console.log('Server running with port ', port);
 });
+
+module.exports = { server, app };

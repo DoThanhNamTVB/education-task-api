@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const subjectSchema = new mongoose.Schema(
     {
         subjectCode: {
-            type: Number,
+            type: String,
             unique: true,
             required: true,
         },

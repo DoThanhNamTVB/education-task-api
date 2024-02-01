@@ -23,7 +23,6 @@ const getUserDetail = asyncHandler(async (req, res) => {
             });
         }
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -49,9 +48,11 @@ const getAllTest = asyncHandler(async (req, res) => {
             return res.status(404).json({
                 message: 'Not found test in database',
             });
-        }
+        return res.status(200).json({
+            message: 'Get data oke',
+            test: response,
+        });
     } catch (error) {
-        res.status(500);
         throw new Error(error);
     }
 });
@@ -74,6 +75,7 @@ const getTestDetailById = asyncHandler(async (req, res) => {
                 model: 'User',
                 select: 'username',
             });
+
         if (response) {
             return res.status(200).json({
                 message: 'Get data oke',

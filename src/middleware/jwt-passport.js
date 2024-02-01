@@ -25,8 +25,18 @@ const isStudent = (req, res, next) => {
     next();
 };
 
+const notAllowStudent = (req, res, next) => {
+    if (req.user.role === 3) {
+        return res.status(401).json({
+            message: 'You are student, not allow to access',
+        });
+    }
+    next();
+};
+
 module.exports = {
     isAdmin,
     isTeacher,
     isStudent,
+    notAllowStudent,
 };
