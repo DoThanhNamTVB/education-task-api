@@ -39,15 +39,6 @@ const getAllTest = asyncHandler(async (req, res) => {
                 model: 'User',
                 select: 'username',
             });
-        if (response) {
-            return res.status(200).json({
-                message: 'Get data oke',
-                test: response,
-            });
-        } else {
-            return res.status(404).json({
-                message: 'Not found test in database',
-            });
         return res.status(200).json({
             message: 'Get data oke',
             test: response,

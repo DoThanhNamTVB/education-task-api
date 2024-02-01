@@ -2,19 +2,18 @@ const asyncHandler = require('express-async-handler');
 const Subject = require('../../model/Subject');
 const { v4: uuidv4 } = require('uuid');
 
+//auto generate subject code
+async function isCodeUnique() {
+    let subjectCode;
+
+    do {
+        subjectCode = uuidv4();
+    } while (await Subject.exists({ subjectCode: subjectCode }));
+    return subjectCode;
+}
 const addSubject = asyncHandler(async (req, res) => {
     try {
         const { subjectName } = req.params;
-
-        //auto generate subject code
-        async function isCodeUnique() {
-            let subjectCode;
-
-            do {
-                subjectCode = uuidv4();
-            } while (await Subject.exists({ subjectCode: subjectCode }));
-            return subjectCode;
-        }
 
         const subjectCode = await isCodeUnique();
 

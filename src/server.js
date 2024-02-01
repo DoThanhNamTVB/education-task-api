@@ -13,7 +13,7 @@ const YAML = require('yamljs'); // Để đọc tệp YAML
 const swaggerDocument = YAML.load('src/swagger.yaml');
 
 const port = process.env.PORT;
-const { dailyCheckStatus } = require('./utils/dailyCheckStatus');
+// const { dailyCheckStatus } = require('./utils/dailyCheckStatus');
 
 //connect db
 DB.connect();
@@ -55,7 +55,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 initRoutes(app);
 
 //check status test daily
-dailyCheckStatus();
+// dailyCheckStatus();
 
 //middleware error handle
 app.use(notFound);

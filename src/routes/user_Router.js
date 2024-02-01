@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 
-
 const {
     isTeacher,
     isStudent,
@@ -45,7 +44,6 @@ router.get(
     getTestDetailById
 );
 
-
 //router teacher
 router.post('/add-question-subject', authenJWT, isTeacher, addQuestion);
 router.get('/search-question', authenJWT, isTeacher, searchQuestion);
@@ -62,7 +60,6 @@ router.put(
 router.post('/create-test', authenJWT, isTeacher, createTest);
 
 //router student
-
 
 router.post('/register-into-test/:testId', authenJWT, isStudent, registerTest);
 router.get('/get-all-test-student', authenJWT, isStudent, getAllTestStudent);

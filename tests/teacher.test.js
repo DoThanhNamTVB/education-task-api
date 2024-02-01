@@ -1,5 +1,5 @@
 // npx jest tests/teacher.test.js
-const { tokenTeacher, tokenStudent } = require('./token');
+const { tokenTeacher } = require('./token');
 const mongoose = require('mongoose');
 const request = require('supertest');
 
@@ -167,38 +167,38 @@ describe('PUT /api/user/question-action/:questionId', () => {
         expect(response.body.message).toBe('data answer is not correct format');
     });
 });
-questionIdDelete =
-    describe('DELETE /api/user/question-action/:questionId', () => {
-        it('should delete a question and return 200 status if questionId is valid', async () => {
-            const existingQuestion = {
-                _id: '65800f26bfcebf90992bc032',
-                questionName: 'What is 2 + 2?',
-                answer: [{ content: '4', isTrue: true }],
-                status: 'active',
-            };
 
-            // Mock Question.findByIdAndDelete to return the deleted question
-            Question.findByIdAndDelete = jest
-                .fn()
-                .mockResolvedValueOnce(existingQuestion);
+describe('DELETE /api/user/question-action/:questionId', () => {
+    it('should delete a question and return 200 status if questionId is valid', async () => {
+        const existingQuestion = {
+            _id: '65800f26bfcebf90992bc032',
+            questionName: 'What is 2 + 2?',
+            answer: [{ content: '4', isTrue: true }],
+            status: 'active',
+        };
 
-            const response = await request(app)
-                .delete(`/api/user/question-action/${existingQuestion._id}`)
-                .set('Authorization', tokenTeacher);
+        // Mock Question.findByIdAndDelete to return the deleted question
+        Question.findByIdAndDelete = jest
+            .fn()
+            .mockResolvedValueOnce(existingQuestion);
 
-            expect(response.status).toBe(200);
-            expect(response.body.message).toBe('delete question oke');
-        });
+        const response = await request(app)
+            .delete(`/api/user/question-action/${existingQuestion._id}`)
+            .set('Authorization', tokenTeacher);
 
-        it('should return 404 status if no question is found', async () => {
-            const response = await request(app)
-                .delete('/api/user/question-action/65800f26bfcebf90992bc03e')
-                .set('Authorization', tokenTeacher);
-
-            expect(response.status).toBe(404);
-            expect(response.body.message).toBe('No this question in database');
-        });
+        expect(response.status).toBe(200);
+        expect(response.body.message).toBe('delete question oke');
     });
+
+    it('should return 404 status if no question is found', async () => {
+        const response = await request(app)
+            .delete('/api/user/question-action/65800f26bfcebf90992bc03e')
+            .set('Authorization', tokenTeacher);
+
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('No this question in database');
+    });
+});
 
 describe('PUT /api/user/change-status-question', () => {
     it('should update the status of a question and return 200 status if questionId and status are valid', async () => {

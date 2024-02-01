@@ -1,8 +1,6 @@
 const Question = require('../../../model/Question');
-const Subject = require('../../../model/Subject');
 const Test = require('../../../model/Test');
 const asyncHandler = require('express-async-handler');
-const mongoose = require('mongoose');
 
 const registerTest = asyncHandler(async (req, res) => {
     try {
