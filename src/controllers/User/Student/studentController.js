@@ -16,7 +16,7 @@ const registerTest = asyncHandler(async (req, res) => {
         }
 
         //register student with test
-        dataStatus = ['Completed', 'Draf', 'Cancel'];
+        const dataStatus = ['Completed', 'Draf', 'Cancel'];
         if (dataStatus.includes(findTest.status)) {
             return res.status(400).json({
                 message: `Not allow to register test with status test now: ${findTest.status}`,
@@ -74,7 +74,7 @@ const getUpComingTest = asyncHandler(async (req, res) => {
                 select: 'questionName answer.content',
             });
         res.status(200).json({
-            message: 'Get upcoming test successful',
+            message: 'Get upcoming test successfull',
             test: findAllTestComing || [],
         });
     } catch (error) {
@@ -95,8 +95,8 @@ const startTest = asyncHandler(async (req, res) => {
 
         //check test is already
         if (test.status !== 'Active') {
-            return res.status(500).json({
-                message: `Test is not already with status test now`,
+            return res.status(404).json({
+                message: `Test is not already(status : ${test.status})`,
             });
         }
         //check student in test
@@ -104,14 +104,14 @@ const startTest = asyncHandler(async (req, res) => {
             (s) => s.studentId.toString() === student._id.toString()
         );
         if (studentIndex === -1) {
-            return res.status(404).json({
-                message: 'Not found you in test list, please register in test',
-            });
+            return res
+                .status(404)
+                .json({ message: 'Not found you in test list' });
         }
 
         //check test is start?
         if (test.student[studentIndex].startTest) {
-            return res.status(500).json({ message: 'test was started' });
+            return res.status(400).json({ message: 'test was started' });
         }
 
         //update startTest time
@@ -247,9 +247,7 @@ const getResultTest = asyncHandler(async (req, res) => {
                 result: result + '/' + totalQuestion,
             });
         } else {
-            return res.status(500).json({
-                message: 'Not found test',
-            });
+            return res.status(404).json('Not found test in database');
         }
     } catch (error) {
         throw new Error(error);

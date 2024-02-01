@@ -2,6 +2,7 @@ const User = require('../../model/User');
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../../utils/generateToken');
 
+
 const register = asyncHandler(async (req, res) => {
     try {
         const { username, password, role } = req.body;
@@ -35,6 +36,7 @@ const register = asyncHandler(async (req, res) => {
 
         if (!checkUser) {
             const userNew = await User.create({
+
                 username: username,
                 password: password,
                 role: +role,
@@ -68,10 +70,21 @@ const login = asyncHandler(async (req, res) => {
         const { username, password } = req.body;
 
         // find username in database
-        const checkUser = await User.findOne({
-            username: username,
-        });
-
+        const checkUser = await User.findO<<<<<<< linter-formatter
+        if (checkUser) {
+            if (await checkUser.checkPassword(password)) {
+                let token = ge                    _id: checkUser._id,
+                    username: checkUser.username,
+                    password: checkUser.password,
+                });
+                res.status(200).json({
+                    message: 'user login successfull',
+                    token: token,
+                });
+            }
+        } else {
+            res.status(401);
+            throw new Error('Invalid user
         if (checkUser && checkUser?.status === 'block') {
             return res.status(403).json({ message: 'Your account is blocked' });
         }
@@ -103,6 +116,7 @@ const removeUser = asyncHandler(async (req, res) => {
         });
         if (user) {
             res.status(200).json({
+
                 message: 'This account blocked sucessfully',
             });
         } else {

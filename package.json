@@ -6,7 +6,14 @@
     "scripts": {
         "test": "cross-env NODE_ENV=test jest",
         "start": "node ./src/server.js",
-        "dev": "nodemon ./src/server.js"
+        "dev": "nodemon ./src/server.js",
+        "prepare": "husky install",
+        "format": "prettier --write '**/*.{js,json}'",
+        "fix": "eslint --fix ."
+    },
+    "lint-staged": {
+        "**/*.{js,json}": "prettier --write",
+        "**/*.js": "eslint --fix"
     },
     "repository": {
         "type": "git",
@@ -42,7 +49,13 @@
         "yamljs": "^0.3.0"
     },
     "devDependencies": {
+        "eslint": "^8.55.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.0.1",
+        "husky": "^8.0.3",
+        "lint-staged": "^15.2.0",
         "morgan": "^1.10.0",
-        "nodemon": "^3.0.1"
+        "nodemon": "^3.0.1",
+        "prettier": "^3.1.1"
     }
 }
