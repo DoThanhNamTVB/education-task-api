@@ -1,8 +1,14 @@
 # education-task-api
+the purpose is to practice my skills on RestFull Api with nodejs, express.
+
+## technology used
+-    Nodejs, express
+-    Jest
+-    Swagger, Docker
 
 ## admin api
 
-### Admin
+> Admin
 
 -   teacher account register
 -   remove user
